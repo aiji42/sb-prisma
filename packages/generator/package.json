@@ -1,6 +1,6 @@
 {
   "name": "prisma-generator-supabase",
-  "description": "Provide a description about your generator",
+  "description": "Automatically generates database code for supabse-js from prisma schema.",
   "version": "1.0.0",
   "main": "dist/generator.js",
   "license": "MIT",
@@ -35,12 +35,12 @@
     "@semantic-release/git": "^10.0.1",
     "semantic-release": "^18.0.1"
   },
-  "homepage": "Link to homepage or github readme here",
+  "homepage": "https://github.com/aiji42/prisma-generator-supabase",
   "repository": {
     "type": "git",
-    "url": "Repo link here"
+    "url": "https://github.com/aiji42/prisma-generator-supabase"
   },
-  "author": "Your Name <Your Email>",
+  "author": "Aiji Uejima <aiji42@gmail.com>",
   "keywords": [
     "prisma",
     "prisma2",
