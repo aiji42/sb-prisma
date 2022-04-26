@@ -5,6 +5,7 @@
     "lib": ["esnext"],
     "strict": true,
     "strictPropertyInitialization": false,
+    "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
