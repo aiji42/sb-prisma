@@ -8,4 +8,4 @@ updates:
   - package-ecosystem: 'npm' # See documentation for possible values
     directory: '/packages/generator/' # Location of package manifests
     schedule:
-      interval: 'daily'
+      interval: 'weekly'
