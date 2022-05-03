@@ -5,13 +5,19 @@
   "main": "src/app.js",
   "license": "MIT",
   "scripts": {},
+  "prisma": {
+    "seed": "ts-node ./prisma/seed.ts"
+  },
   "dependencies": {
-    "@prisma/client": "3.12.0"
+    "@prisma/client": "3.12.0",
+    "@supabase/supabase-js": "^1.35.2",
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "@types/node": "17.0.27",
     "prisma": "3.12.0",
     "prisma-generator-supabase": "1.0.0",
+    "ts-node": "^10.7.0",
     "typescript": "4.6.3"
   }
 }

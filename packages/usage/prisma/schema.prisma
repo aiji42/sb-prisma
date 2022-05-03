@@ -1,6 +1,11 @@
-generator custom_generator {
-  provider = "node ../../node_modules/prisma-generator-supabase"
-  output   = "../types"
+//generator custom_generator {
+//  provider = "node ../../node_modules/prisma-generator-supabase"
+//  output   = "../types"
+//}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["dataproxy", "referentialIntegrity"]
 }
 
 datasource db {
@@ -9,9 +14,18 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id     Int     @id @default(autoincrement())
+  email  String  @unique
+  name   String?
+  teamId Int?
+
+  Team   Team? @relation(fields: [teamId], references: [id])
+}
+
+model Team {
+  id   Int    @id @default(autoincrement())
+  name String
+  users User[]
 }
 
 enum NotificationType {
