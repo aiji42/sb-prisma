@@ -2,7 +2,10 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "commonjs",
-    "lib": ["esnext"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "strict": true,
     "strictPropertyInitialization": false,
     "noUncheckedIndexedAccess": true,
@@ -17,7 +20,8 @@
     "moduleResolution": "Node",
     "outDir": "./dist",
     "rootDir": "./src",
-    "newLine": "lf"
+    "newLine": "lf",
+    "declaration": true
   },
   "include": ["src/**/*"],
   "exclude": ["**/node_modules", "**/*.test.ts","**/__tests__", "**/dest"]

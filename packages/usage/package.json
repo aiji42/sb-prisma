@@ -11,10 +11,12 @@
   "dependencies": {
     "@prisma/client": "3.12.0",
     "@supabase/supabase-js": "^1.35.2",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "@types/node": "17.0.27",
+    "@types/node-fetch": "^2.6.1",
     "prisma": "3.12.0",
     "prisma-generator-supabase": "1.0.0",
     "ts-node": "^10.7.0",

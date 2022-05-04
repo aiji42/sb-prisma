@@ -2,7 +2,7 @@ import { Args, NegativeOperators, Operators, Scalar, Where } from './types'
 
 // TODO: related table
 export const makeWhere = (arg: Args) => {
-  if (!arg.where) return
+  if (!arg.where) return ''
   const { AND, OR, NOT, ...rest } = arg.where
   let where = []
   if (AND) where.push(_AND(AND))
