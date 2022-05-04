@@ -25,8 +25,12 @@ prepare({
 })
 
 const prisma = createClient<PrismaClient>(PrismaClient)
+// const db = new PrismaClient()
 
 const main = async () => {
+  const user = await sb(prisma.user.findUnique({ where: { id: 1 } }))
+  console.dir(user)
+
   const users = await sb(
     prisma.user.findMany({
       select: {
@@ -41,13 +45,13 @@ const main = async () => {
       where: {
         OR: [
           {
-            name: { contains: 'foo', mode: 'insensitive' },
+            name: { contains: 'oo', mode: 'insensitive' },
           },
           {
-            name: { contains: 'bar', mode: 'insensitive' },
+            name: { contains: 'ar', mode: 'insensitive' },
           },
           {
-            name: { contains: 'baz', mode: 'insensitive' },
+            name: { contains: 'az', mode: 'insensitive' },
           },
         ],
       },

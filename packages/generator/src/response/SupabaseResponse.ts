@@ -4,7 +4,13 @@ type SupabaseError = { message: string; hint: string }
 class SupabaseResponse {
   public data: null | Data
   public error: null | SupabaseError
-  constructor({ data, error }: { data?: Data; error?: SupabaseError }) {
+  constructor({
+    data,
+    error,
+  }: {
+    data?: SupabaseResponse['data']
+    error?: SupabaseResponse['error']
+  }) {
     this.data = data ?? null
     this.error = error ?? null
   }

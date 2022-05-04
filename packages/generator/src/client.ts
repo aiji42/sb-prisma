@@ -26,6 +26,7 @@ export const prepare = ({
 }
 
 export const createClient = <T>(_PrismaClient: PrismaClientType): T => {
+  // TODO
   if (!(_modelMap && _endpoint && _apikey && _fetch)) throw new Error('')
   const fetcher = makeFetcher(_endpoint, _apikey, _fetch)
   // @ts-ignore
