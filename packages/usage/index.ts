@@ -1,65 +1,64 @@
 import { PrismaClient } from '@prisma/client'
 import 'dotenv/config'
-import { makeFetcher } from 'prisma-generator-supabase/dist/helpers/makeFetcher'
+import {
+  createClient,
+  prepare,
+  sb,
+} from 'prisma-generator-supabase/dist/client'
 import fetch from 'node-fetch'
-
-const fetcher = makeFetcher(
-  process.env.SUPABASE_URL ?? '',
-  process.env.SUPABASE_ANON_KEY ?? '',
-  // @ts-ignore
-  fetch,
-)
-
-const prisma = new PrismaClient({
-  // @ts-ignore
-  __internal: {
-    hooks: {
-      beforeRequest: async ({
-        args = {},
-        typeName,
-      }: {
-        args?: any
-        typeName: string
-      }) => {
-        const res = await fetcher(args, typeName, modelMapper)
-        throw await res.json()
-      },
-    },
-  },
-})
 
 const modelMapper: Record<string, string> = {
   'User.Team': 'Team',
   'Team.users': 'User',
 }
 
+prepare({
+  endpoint: process.env.SUPABASE_URL ?? '',
+  apikey: process.env.SUPABASE_ANON_KEY ?? '',
+  // @ts-ignore
+  fetch: (url, init) => {
+    console.log(url)
+    // @ts-ignore
+    return fetch(url, init)
+  },
+  modelMap: modelMapper,
+})
+
+const prisma = createClient<PrismaClient>(PrismaClient)
+
 const main = async () => {
-  console.dir(
-    await prisma.user
-      .findMany({
-        select: {
-          id: true,
-          name: true,
-          Team: {
-            select: {
-              users: true,
-            },
+  const users = await sb(
+    prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        Team: {
+          select: {
+            name: true,
           },
         },
-        take: 3,
-        skip: 0,
-        orderBy: { id: 'desc' },
-        where: {
-          id: { notIn: [2] },
-        },
-      })
-      .catch((data) => data),
-    { depth: 5 },
+      },
+      where: {
+        OR: [
+          {
+            name: { contains: 'foo', mode: 'insensitive' },
+          },
+          {
+            name: { contains: 'bar', mode: 'insensitive' },
+          },
+          {
+            name: { contains: 'baz', mode: 'insensitive' },
+          },
+        ],
+      },
+      orderBy: { id: 'desc' },
+    }),
   )
+  console.dir(users, { depth: 5 })
 
   console.dir(
-    await prisma.team
-      .findMany({
+    await sb(
+      prisma.team.findMany({
         select: {
           id: true,
           name: false,
@@ -78,8 +77,8 @@ const main = async () => {
           name: { in: ['team1', 'team2'] },
           id: { gte: 1 },
         },
-      })
-      .catch((data) => data),
+      }),
+    ),
     { depth: 5 },
   )
 }

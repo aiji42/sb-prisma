@@ -3,13 +3,18 @@ import { makeSelect } from './makeSelect'
 import { makeOrder } from './makeOrder'
 import { makeWhere } from './makeWhere'
 
-type MakeFetcher = typeof fetch
+export type Fetch = typeof fetch
+export type Fetcher = (
+  args: Args,
+  table: string,
+  modelMap?: Record<string, string>,
+) => Promise<Response>
 
 export const makeFetcher = (
   endpoint: string,
   apikey: string,
-  fetch: MakeFetcher,
-) => {
+  fetch: Fetch,
+): Fetcher => {
   return (args: Args, table: string, modelMap: Record<string, string> = {}) => {
     const select = makeSelect(args, table, modelMap)
     const orderBy = makeOrder(args)
