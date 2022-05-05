@@ -35,8 +35,13 @@ export const makeFetcher = (
       headers: {
         apikey,
         Authorization: `Bearer ${apikey}`,
+        'Content-Type': 'application/json',
         ...headers,
       },
+      ...(args.data &&
+        ['POST', 'PATCH'].includes(method) && {
+          body: JSON.stringify(args.data),
+        }),
     })
   }
 }

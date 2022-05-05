@@ -20,6 +20,9 @@ export const makeHooks = (
     if (method === 'delete') await deleteOne(fetcher)(args, table, modelMapper)
     if (method === 'deleteMany')
       await deleteMany(fetcher)(args, table, modelMapper)
+    if (method === 'update') await updateOne(fetcher)(args, table, modelMapper)
+    if (method === 'updateMany')
+      await updateMany(fetcher)(args, table, modelMapper)
   },
 })
 
@@ -56,6 +59,28 @@ const deleteMany =
   (fetcher: Fetcher) =>
   async (args: Args, table: string, modelMapper: Record<string, string>) => {
     const res = await fetcher(args, 'DELETE', table, modelMapper, {
+      Prefer: 'return=representation',
+    })
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    const data = await res.json()
+    throw new SupabaseResponse({ data: { count: data.length } })
+  }
+
+const updateOne =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'PATCH', table, modelMapper, {
+      Prefer: 'return=representation',
+    })
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    const data = await res.json()
+    throw new SupabaseResponse({ data: singly(data) })
+  }
+
+const updateMany =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'PATCH', table, modelMapper, {
       Prefer: 'return=representation',
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })

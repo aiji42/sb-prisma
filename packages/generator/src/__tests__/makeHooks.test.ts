@@ -109,6 +109,60 @@ test('make hooks; deleteMany', async () => {
   expect(res.error).toBeNull()
 })
 
+test('make hooks; update', async () => {
+  mockFetcher.mockReturnValue(
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([{ id: 1, name: 'foo' }]),
+    }),
+  )
+  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const res = await hooks
+    .beforeRequest({
+      clientMethod: 'user.update',
+      args: { where: { id: 1 }, data: { name: 'foo' } },
+    })
+    .catch((res) => res)
+
+  expect(mockFetcher).toBeCalledWith(
+    { where: { id: 1 }, data: { name: 'foo' } },
+    'PATCH',
+    'User',
+    { user: 'User' },
+    { Prefer: 'return=representation' },
+  )
+  expect(res).toBeInstanceOf(SupabaseResponse)
+  expect(res.data).toMatchObject({ id: 1, name: 'foo' })
+  expect(res.error).toBeNull()
+})
+
+test('make hooks; updateMany', async () => {
+  mockFetcher.mockReturnValue(
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([{ id: 1 }, { id: 2 }]),
+    }),
+  )
+  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const res = await hooks
+    .beforeRequest({
+      clientMethod: 'user.updateMany',
+      args: { data: { name: 'foo' } },
+    })
+    .catch((res) => res)
+
+  expect(mockFetcher).toBeCalledWith(
+    { data: { name: 'foo' } },
+    'PATCH',
+    'User',
+    { user: 'User' },
+    { Prefer: 'return=representation' },
+  )
+  expect(res).toBeInstanceOf(SupabaseResponse)
+  expect(res.data).toMatchObject({ count: 2 })
+  expect(res.error).toBeNull()
+})
+
 test('make hooks; with error', async () => {
   mockFetcher.mockReturnValue(
     Promise.resolve({

@@ -27,7 +27,7 @@ prepare({
 })
 
 const prisma = createClient<PrismaClient>(PrismaClient)
-// const db = new PrismaClient()
+const db = new PrismaClient()
 
 const main = async () => {
   const user = await sb(prisma.user.findFirst())
@@ -83,6 +83,26 @@ const main = async () => {
           name: { in: ['team1', 'team2'] },
           id: { gte: 1 },
         },
+      }),
+    ),
+    { depth: 5 },
+  )
+
+  user &&
+    console.dir(
+      await sb(
+        prisma.user.update({
+          data: { name: 'hoo' },
+          where: { id: user.id },
+        }),
+      ),
+      { depth: 5 },
+    )
+
+  console.dir(
+    await sb(
+      prisma.user.updateMany({
+        data: { name: 'hoo' },
       }),
     ),
     { depth: 5 },

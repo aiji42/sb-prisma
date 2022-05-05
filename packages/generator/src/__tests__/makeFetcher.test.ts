@@ -33,7 +33,40 @@ test('make fetcher', () => {
         apikey: 'exampletoken',
         Authorization: 'Bearer exampletoken',
         Additional: 'Additional header',
+        'Content-Type': 'application/json',
       },
+    },
+  )
+})
+
+test('make fetcher with data and POST/PATCH method', () => {
+  const fetcher = makeFetcher(
+    'https://example.supabase.co',
+    'exampletoken',
+    fetchMock,
+  )
+  fetcher(
+    {
+      where: { id: { gt: 10 } },
+      data: { name: 'foo' },
+    },
+    'POST',
+    'User',
+    {},
+    { Additional: 'Additional header' },
+  )
+
+  expect(fetchMock).toBeCalledWith(
+    'https://example.supabase.co/rest/v1/User?select=*&and=%28id.gt.10%29',
+    {
+      method: 'POST',
+      headers: {
+        apikey: 'exampletoken',
+        Authorization: 'Bearer exampletoken',
+        Additional: 'Additional header',
+        'Content-Type': 'application/json',
+      },
+      body: '{"name":"foo"}',
     },
   )
 })

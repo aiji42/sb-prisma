@@ -34,4 +34,5 @@ export type Args = {
     OR?: Where[] | Where
     NOT?: Where[] | Where
   }
+  data?: Record<string, unknown> | Record<string, unknown>[]
 }

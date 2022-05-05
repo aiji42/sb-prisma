@@ -22,9 +22,6 @@ const main = async () => {
       name: 'team2',
       users: {
         create: [{ name: 'Baz', email: 'baz@example.com' }],
-        createMany: {
-          data: [{ name: 'Baz', email: 'baz@example.com' }],
-        },
       },
     },
   })
