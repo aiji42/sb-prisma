@@ -6,8 +6,10 @@ import { makeWhere } from './makeWhere'
 export type Fetch = typeof fetch
 export type Fetcher = (
   args: Args,
+  method: string,
   table: string,
-  modelMap?: Record<string, string>,
+  modelMap: Record<string, string>,
+  headers?: Record<string, string>,
 ) => Promise<Response>
 
 export const makeFetcher = (
@@ -15,7 +17,7 @@ export const makeFetcher = (
   apikey: string,
   fetch: Fetch,
 ): Fetcher => {
-  return (args: Args, table: string, modelMap: Record<string, string> = {}) => {
+  return (args, method, table, modelMap, headers) => {
     const select = makeSelect(args, table, modelMap)
     const orderBy = makeOrder(args)
     const where = makeWhere(args)
@@ -29,9 +31,11 @@ export const makeFetcher = (
     args.skip && url.searchParams.append('offset', args.skip.toString())
 
     return fetch(url.toString(), {
+      method,
       headers: {
         apikey,
         Authorization: `Bearer ${apikey}`,
+        ...headers,
       },
     })
   }

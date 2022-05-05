@@ -8,22 +8,75 @@ export const makeHooks = (
 ) => ({
   beforeRequest: async ({
     args = {},
-    typeName,
-    isList,
+    clientMethod,
   }: {
     args?: Args
-    typeName: string
-    isList: boolean
+    clientMethod: string
   }) => {
-    const res = await fetcher(args, typeName, modelMapper)
-    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
-    throw new SupabaseResponse({ data: filter(await res.json(), isList) })
+    const [table, method] = getTableAndMethod(clientMethod, modelMapper)
+    if (['findFirst', 'findUnique'].includes(method))
+      await findOne(fetcher)(args, table, modelMapper)
+    if (method === 'findMany') await findMany(fetcher)(args, table, modelMapper)
+    if (method === 'delete') await deleteOne(fetcher)(args, table, modelMapper)
+    if (method === 'deleteMany')
+      await deleteMany(fetcher)(args, table, modelMapper)
   },
 })
 
-const filter = (
+const findOne =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'GET', table, modelMapper)
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    throw new SupabaseResponse({ data: singly(await res.json()) })
+  }
+
+const findMany =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'GET', table, modelMapper)
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    throw new SupabaseResponse({ data: await res.json() })
+  }
+
+const deleteOne =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'DELETE', table, modelMapper, {
+      Prefer: 'return=representation',
+    })
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    const data = await res.json()
+    // TODO
+    if (data.length < 1) throw Error('')
+    throw new SupabaseResponse({ data: singly(data) })
+  }
+
+const deleteMany =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'DELETE', table, modelMapper, {
+      Prefer: 'return=representation',
+    })
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    const data = await res.json()
+    throw new SupabaseResponse({ data: { count: data.length } })
+  }
+
+const singly = (
   data: SupabaseResponse['data'][],
-  isList: boolean,
 ): SupabaseResponse['data'] | undefined => {
-  return isList ? data : data[0]
+  return data[0]
+}
+
+const getTableAndMethod = (
+  clientMethod: string,
+  modelMapper: Record<string, string>,
+): [string, string] => {
+  const [t = '', method = ''] = clientMethod.split('.')
+  const table = modelMapper[t]
+  // TODO
+  if (!table) throw new Error('')
+
+  return [table, method]
 }

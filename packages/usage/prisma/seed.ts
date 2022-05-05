@@ -3,16 +3,35 @@ import { PrismaClient } from '@prisma/client'
 const db = new PrismaClient()
 
 const main = async () => {
-  await db.team.createMany({
-    data: [{ name: 'team1' }, { name: 'team2' }],
+  await db.team.deleteMany({})
+  await db.user.deleteMany({})
+
+  await db.team.create({
+    data: {
+      name: 'team1',
+      users: {
+        create: [
+          { name: 'Foo', email: 'foo@example.com' },
+          { name: 'Bar', email: 'bar@example.com' },
+        ],
+      },
+    },
   })
-  const teams = await db.team.findMany()
-  await db.user.createMany({
-    data: [
-      { name: 'Foo', email: 'foo@example.com', teamId: teams[0].id },
-      { name: 'Bar', email: 'bar@example.com', teamId: teams[0].id },
-      { name: 'Baz', email: 'baz@example.com', teamId: teams[1].id },
-    ],
+  await db.team.create({
+    data: {
+      name: 'team2',
+      users: {
+        create: [{ name: 'Baz', email: 'baz@example.com' }],
+        createMany: {
+          data: [{ name: 'Baz', email: 'baz@example.com' }],
+        },
+      },
+    },
+  })
+  await db.team.create({
+    data: {
+      name: 'team3',
+    },
   })
 }
 

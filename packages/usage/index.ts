@@ -8,6 +8,8 @@ import {
 import fetch from 'node-fetch'
 
 const modelMapper: Record<string, string> = {
+  user: 'User',
+  team: 'Team',
   'User.Team': 'Team',
   'Team.users': 'User',
 }
@@ -17,7 +19,7 @@ prepare({
   apikey: process.env.SUPABASE_ANON_KEY ?? '',
   // @ts-ignore
   fetch: (url, init) => {
-    console.log(url)
+    console.log(init?.method, url)
     // @ts-ignore
     return fetch(url, init)
   },
@@ -28,7 +30,7 @@ const prisma = createClient<PrismaClient>(PrismaClient)
 // const db = new PrismaClient()
 
 const main = async () => {
-  const user = await sb(prisma.user.findUnique({ where: { id: 1 } }))
+  const user = await sb(prisma.user.findFirst())
   console.dir(user)
 
   const users = await sb(
@@ -85,6 +87,18 @@ const main = async () => {
     ),
     { depth: 5 },
   )
+
+  user &&
+    console.dir(await sb(prisma.user.delete({ where: { id: user.id } })), {
+      depth: 5,
+    })
+
+  const deletedUsers = await sb(
+    prisma.team.deleteMany({
+      where: { name: { contains: 'team' } },
+    }),
+  )
+  console.dir(deletedUsers, { depth: 5 })
 }
 
 main().catch(console.log)
