@@ -23,6 +23,9 @@ export const makeHooks = (
     if (method === 'update') await updateOne(fetcher)(args, table, modelMapper)
     if (method === 'updateMany')
       await updateMany(fetcher)(args, table, modelMapper)
+    if (method === 'create') await createOne(fetcher)(args, table, modelMapper)
+    if (method === 'createMany')
+      await createMany(fetcher)(args, table, modelMapper)
   },
 })
 
@@ -82,6 +85,30 @@ const updateMany =
   async (args: Args, table: string, modelMapper: Record<string, string>) => {
     const res = await fetcher(args, 'PATCH', table, modelMapper, {
       Prefer: 'return=representation',
+    })
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    const data = await res.json()
+    throw new SupabaseResponse({ data: { count: data.length } })
+  }
+
+const createOne =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'POST', table, modelMapper, {
+      Prefer: 'return=representation',
+    })
+    if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
+    const data = await res.json()
+    throw new SupabaseResponse({ data: singly(data) })
+  }
+
+const createMany =
+  (fetcher: Fetcher) =>
+  async (args: Args, table: string, modelMapper: Record<string, string>) => {
+    const res = await fetcher(args, 'POST', table, modelMapper, {
+      Prefer: `return=representation${
+        args.skipDuplicates ? ',resolution=ignore-duplicates' : ''
+      }`,
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
     const data = await res.json()

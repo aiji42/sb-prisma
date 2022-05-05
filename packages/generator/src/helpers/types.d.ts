@@ -35,4 +35,5 @@ export type Args = {
     NOT?: Where[] | Where
   }
   data?: Record<string, unknown> | Record<string, unknown>[]
+  skipDuplicates?: boolean
 }

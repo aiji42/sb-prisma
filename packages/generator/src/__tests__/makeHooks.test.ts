@@ -163,6 +163,87 @@ test('make hooks; updateMany', async () => {
   expect(res.error).toBeNull()
 })
 
+test('make hooks; create', async () => {
+  mockFetcher.mockReturnValue(
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([{ id: 1, name: 'foo' }]),
+    }),
+  )
+  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const res = await hooks
+    .beforeRequest({
+      clientMethod: 'user.create',
+      args: { data: { name: 'foo' } },
+    })
+    .catch((res) => res)
+
+  expect(mockFetcher).toBeCalledWith(
+    { data: { name: 'foo' } },
+    'POST',
+    'User',
+    { user: 'User' },
+    { Prefer: 'return=representation' },
+  )
+  expect(res).toBeInstanceOf(SupabaseResponse)
+  expect(res.data).toMatchObject({ id: 1, name: 'foo' })
+  expect(res.error).toBeNull()
+})
+
+test('make hooks; createMany', async () => {
+  mockFetcher.mockReturnValue(
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([{ id: 1 }, { id: 2 }]),
+    }),
+  )
+  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const res = await hooks
+    .beforeRequest({
+      clientMethod: 'user.createMany',
+      args: { data: [{ name: 'foo' }, { name: 'bar' }] },
+    })
+    .catch((res) => res)
+
+  expect(mockFetcher).toBeCalledWith(
+    { data: [{ name: 'foo' }, { name: 'bar' }] },
+    'POST',
+    'User',
+    { user: 'User' },
+    { Prefer: 'return=representation' },
+  )
+  expect(res).toBeInstanceOf(SupabaseResponse)
+  expect(res.data).toMatchObject({ count: 2 })
+  expect(res.error).toBeNull()
+})
+
+test('make hooks; createMany with skipDuplicates', async () => {
+  mockFetcher.mockReturnValue(
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([{ id: 2 }]),
+    }),
+  )
+  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const res = await hooks
+    .beforeRequest({
+      clientMethod: 'user.createMany',
+      args: { data: [{ name: 'foo' }, { name: 'bar' }], skipDuplicates: true },
+    })
+    .catch((res) => res)
+
+  expect(mockFetcher).toBeCalledWith(
+    { data: [{ name: 'foo' }, { name: 'bar' }], skipDuplicates: true },
+    'POST',
+    'User',
+    { user: 'User' },
+    { Prefer: 'return=representation,resolution=ignore-duplicates' },
+  )
+  expect(res).toBeInstanceOf(SupabaseResponse)
+  expect(res.data).toMatchObject({ count: 1 })
+  expect(res.error).toBeNull()
+})
+
 test('make hooks; with error', async () => {
   mockFetcher.mockReturnValue(
     Promise.resolve({

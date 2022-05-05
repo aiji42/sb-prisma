@@ -88,6 +88,26 @@ const main = async () => {
     { depth: 5 },
   )
 
+  console.dir(
+    await sb(
+      prisma.user.create({
+        data: { name: 'ega', email: 'ewrbrwa@grag.com' },
+      }),
+    ),
+    { depth: 5 },
+  )
+
+  user &&
+    console.dir(
+      await sb(
+        prisma.user.createMany({
+          data: [user],
+          skipDuplicates: true,
+        }),
+      ),
+      { depth: 5 },
+    )
+
   user &&
     console.dir(
       await sb(
