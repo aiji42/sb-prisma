@@ -1,7 +1,7 @@
-//generator custom_generator {
-//  provider = "node ../../node_modules/prisma-generator-supabase"
-//  output   = "../types"
-//}
+generator custom_generator {
+  provider = "node ../../node_modules/prisma-generator-supabase"
+  output   = "../types"
+}
 
 generator client {
   provider        = "prisma-client-js"

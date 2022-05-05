@@ -6,13 +6,7 @@ import {
   sb,
 } from 'prisma-generator-supabase/dist/client'
 import fetch from 'node-fetch'
-
-const modelMapper: Record<string, string> = {
-  user: 'User',
-  team: 'Team',
-  'User.Team': 'Team',
-  'Team.users': 'User',
-}
+import * as modelMap from './supabase-prisma'
 
 prepare({
   endpoint: process.env.SUPABASE_URL ?? '',
@@ -23,7 +17,7 @@ prepare({
     // @ts-ignore
     return fetch(url, init)
   },
-  modelMap: modelMapper,
+  modelMap,
 })
 
 const prisma = createClient<PrismaClient>(PrismaClient)

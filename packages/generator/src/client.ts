@@ -2,8 +2,9 @@ import { makeHooks } from './helpers/hooks'
 import { makeFetcher, Fetch } from './helpers/makeFetcher'
 import SupabaseResponse from './response/SupabaseResponse'
 import type { PrismaClient as PrismaClientType } from '@prisma/client/scripts/default-index'
+import { ModelMapping } from './helpers/types'
 
-let _modelMap: undefined | Record<string, string>
+let _modelMap: undefined | ModelMapping
 let _endpoint: undefined | string
 let _apikey: undefined | string
 let _fetch: undefined | Fetch
@@ -17,7 +18,7 @@ export const prepare = ({
   endpoint: string
   apikey: string
   fetch: Fetch
-  modelMap: Record<string, string>
+  modelMap: ModelMapping
 }) => {
   _endpoint = endpoint
   _apikey = apikey

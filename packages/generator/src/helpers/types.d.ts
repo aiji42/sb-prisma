@@ -37,3 +37,9 @@ export type Args = {
   data?: Record<string, unknown> | Record<string, unknown>[]
   skipDuplicates?: boolean
 }
+
+export type ModelMapping = {
+  operationMapping: Record<string, { model: string; method: string }>
+  relationMapping: Record<string, Record<string, string>>
+  tableMapping: Record<string, string>
+}

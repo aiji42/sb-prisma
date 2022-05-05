@@ -1,54 +1,55 @@
-import { Args } from './types'
+import { Args, ModelMapping } from './types'
 import SupabaseResponse from '../response/SupabaseResponse'
 import { Fetcher } from './makeFetcher'
 
-export const makeHooks = (
-  fetcher: Fetcher,
-  modelMapper: Record<string, string>,
-) => ({
+export const makeHooks = (fetcher: Fetcher, modelMapping: ModelMapping) => ({
   beforeRequest: async ({
     args = {},
-    clientMethod,
+    rootField,
   }: {
     args?: Args
-    clientMethod: string
+    rootField: string
   }) => {
-    const [table, method] = getTableAndMethod(clientMethod, modelMapper)
+    const [model, method] = getModelAndMethod(rootField, modelMapping)
     if (['findFirst', 'findUnique'].includes(method))
-      await findOne(fetcher)(args, table, modelMapper)
-    if (method === 'findMany') await findMany(fetcher)(args, table, modelMapper)
-    if (method === 'delete') await deleteOne(fetcher)(args, table, modelMapper)
+      await findOne(fetcher)(args, model, modelMapping)
+    if (method === 'findMany')
+      await findMany(fetcher)(args, model, modelMapping)
+    if (method === 'deleteOne')
+      await deleteOne(fetcher)(args, model, modelMapping)
     if (method === 'deleteMany')
-      await deleteMany(fetcher)(args, table, modelMapper)
-    if (method === 'update') await updateOne(fetcher)(args, table, modelMapper)
+      await deleteMany(fetcher)(args, model, modelMapping)
+    if (method === 'updateOne')
+      await updateOne(fetcher)(args, model, modelMapping)
     if (method === 'updateMany')
-      await updateMany(fetcher)(args, table, modelMapper)
-    if (method === 'create') await createOne(fetcher)(args, table, modelMapper)
+      await updateMany(fetcher)(args, model, modelMapping)
+    if (method === 'createOne')
+      await createOne(fetcher)(args, model, modelMapping)
     if (method === 'createMany')
-      await createMany(fetcher)(args, table, modelMapper)
+      await createMany(fetcher)(args, model, modelMapping)
   },
 })
 
 const findOne =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'GET', table, modelMapper)
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'GET', model, modelMapping)
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
     throw new SupabaseResponse({ data: singly(await res.json()) })
   }
 
 const findMany =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'GET', table, modelMapper)
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'GET', model, modelMapping)
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
     throw new SupabaseResponse({ data: await res.json() })
   }
 
 const deleteOne =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'DELETE', table, modelMapper, {
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'DELETE', model, modelMapping, {
       Prefer: 'return=representation',
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
@@ -60,8 +61,8 @@ const deleteOne =
 
 const deleteMany =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'DELETE', table, modelMapper, {
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'DELETE', model, modelMapping, {
       Prefer: 'return=representation',
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
@@ -71,8 +72,8 @@ const deleteMany =
 
 const updateOne =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'PATCH', table, modelMapper, {
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'PATCH', model, modelMapping, {
       Prefer: 'return=representation',
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
@@ -82,8 +83,8 @@ const updateOne =
 
 const updateMany =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'PATCH', table, modelMapper, {
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'PATCH', model, modelMapping, {
       Prefer: 'return=representation',
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
@@ -93,8 +94,8 @@ const updateMany =
 
 const createOne =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'POST', table, modelMapper, {
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'POST', model, modelMapping, {
       Prefer: 'return=representation',
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
@@ -104,8 +105,8 @@ const createOne =
 
 const createMany =
   (fetcher: Fetcher) =>
-  async (args: Args, table: string, modelMapper: Record<string, string>) => {
-    const res = await fetcher(args, 'POST', table, modelMapper, {
+  async (args: Args, model: string, modelMapping: ModelMapping) => {
+    const res = await fetcher(args, 'POST', model, modelMapping, {
       Prefer: `return=representation${
         args.skipDuplicates ? ',resolution=ignore-duplicates' : ''
       }`,
@@ -121,14 +122,13 @@ const singly = (
   return data[0]
 }
 
-const getTableAndMethod = (
-  clientMethod: string,
-  modelMapper: Record<string, string>,
+const getModelAndMethod = (
+  rootField: string,
+  modelMapping: ModelMapping,
 ): [string, string] => {
-  const [t = '', method = ''] = clientMethod.split('.')
-  const table = modelMapper[t]
+  const { model, method } = modelMapping.operationMapping[rootField] ?? {}
   // TODO
-  if (!table) throw new Error('')
+  if (!(model && method)) throw new Error('')
 
-  return [table, method]
+  return [model, method]
 }

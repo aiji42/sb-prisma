@@ -1,5 +1,6 @@
 import { makeHooks } from '../helpers/hooks'
 import SupabaseResponse from '../response/SupabaseResponse'
+import * as modelMap from './__fixtures__/modelMapping'
 
 const mockFetcher = jest.fn()
 
@@ -14,12 +15,12 @@ test('make hooks; findMany', async () => {
       json: () => Promise.resolve([{ foo: 'bar' }, { foo: 'baz' }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
-    .beforeRequest({ clientMethod: 'user.findMany' })
+    .beforeRequest({ rootField: 'findManyUser' })
     .catch((res) => res)
 
-  expect(mockFetcher).toBeCalledWith({}, 'GET', 'User', { user: 'User' })
+  expect(mockFetcher).toBeCalledWith({}, 'GET', 'User', modelMap)
   expect(res).toBeInstanceOf(SupabaseResponse)
   expect(res.data).toMatchObject([{ foo: 'bar' }, { foo: 'baz' }])
   expect(res.error).toBeNull()
@@ -32,12 +33,12 @@ test('make hooks; findFirst', async () => {
       json: () => Promise.resolve([{ foo: 'bar' }, { foo: 'baz' }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
-    .beforeRequest({ clientMethod: 'user.findFirst' })
+    .beforeRequest({ rootField: 'findFirstUser' })
     .catch((res) => res)
 
-  expect(mockFetcher).toBeCalledWith({}, 'GET', 'User', { user: 'User' })
+  expect(mockFetcher).toBeCalledWith({}, 'GET', 'User', modelMap)
   expect(res).toBeInstanceOf(SupabaseResponse)
   expect(res.data).toMatchObject({ foo: 'bar' })
   expect(res.error).toBeNull()
@@ -50,12 +51,12 @@ test('make hooks; findFirst no records', async () => {
       json: () => Promise.resolve([]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
-    .beforeRequest({ clientMethod: 'user.findFirst' })
+    .beforeRequest({ rootField: 'findFirstUser' })
     .catch((res) => res)
 
-  expect(mockFetcher).toBeCalledWith({}, 'GET', 'User', { user: 'User' })
+  expect(mockFetcher).toBeCalledWith({}, 'GET', 'User', modelMap)
   expect(res).toBeInstanceOf(SupabaseResponse)
   expect(res.data).toBeNull()
   expect(res.error).toBeNull()
@@ -68,18 +69,14 @@ test('make hooks; delete', async () => {
       json: () => Promise.resolve([{ id: 1 }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
-    .beforeRequest({ clientMethod: 'user.delete' })
+    .beforeRequest({ rootField: 'deleteOneUser' })
     .catch((res) => res)
 
-  expect(mockFetcher).toBeCalledWith(
-    {},
-    'DELETE',
-    'User',
-    { user: 'User' },
-    { Prefer: 'return=representation' },
-  )
+  expect(mockFetcher).toBeCalledWith({}, 'DELETE', 'User', modelMap, {
+    Prefer: 'return=representation',
+  })
   expect(res).toBeInstanceOf(SupabaseResponse)
   expect(res.data).toMatchObject({ id: 1 })
   expect(res.error).toBeNull()
@@ -92,18 +89,14 @@ test('make hooks; deleteMany', async () => {
       json: () => Promise.resolve([{ id: 1 }, { id: 2 }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
-    .beforeRequest({ clientMethod: 'user.deleteMany' })
+    .beforeRequest({ rootField: 'deleteManyUser' })
     .catch((res) => res)
 
-  expect(mockFetcher).toBeCalledWith(
-    {},
-    'DELETE',
-    'User',
-    { user: 'User' },
-    { Prefer: 'return=representation' },
-  )
+  expect(mockFetcher).toBeCalledWith({}, 'DELETE', 'User', modelMap, {
+    Prefer: 'return=representation',
+  })
   expect(res).toBeInstanceOf(SupabaseResponse)
   expect(res.data).toMatchObject({ count: 2 })
   expect(res.error).toBeNull()
@@ -116,10 +109,10 @@ test('make hooks; update', async () => {
       json: () => Promise.resolve([{ id: 1, name: 'foo' }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
     .beforeRequest({
-      clientMethod: 'user.update',
+      rootField: 'updateOneUser',
       args: { where: { id: 1 }, data: { name: 'foo' } },
     })
     .catch((res) => res)
@@ -128,7 +121,7 @@ test('make hooks; update', async () => {
     { where: { id: 1 }, data: { name: 'foo' } },
     'PATCH',
     'User',
-    { user: 'User' },
+    modelMap,
     { Prefer: 'return=representation' },
   )
   expect(res).toBeInstanceOf(SupabaseResponse)
@@ -143,10 +136,10 @@ test('make hooks; updateMany', async () => {
       json: () => Promise.resolve([{ id: 1 }, { id: 2 }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
     .beforeRequest({
-      clientMethod: 'user.updateMany',
+      rootField: 'updateManyUser',
       args: { data: { name: 'foo' } },
     })
     .catch((res) => res)
@@ -155,7 +148,7 @@ test('make hooks; updateMany', async () => {
     { data: { name: 'foo' } },
     'PATCH',
     'User',
-    { user: 'User' },
+    modelMap,
     { Prefer: 'return=representation' },
   )
   expect(res).toBeInstanceOf(SupabaseResponse)
@@ -170,10 +163,11 @@ test('make hooks; create', async () => {
       json: () => Promise.resolve([{ id: 1, name: 'foo' }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
     .beforeRequest({
-      clientMethod: 'user.create',
+      rootField: 'createOneUser',
+
       args: { data: { name: 'foo' } },
     })
     .catch((res) => res)
@@ -182,7 +176,7 @@ test('make hooks; create', async () => {
     { data: { name: 'foo' } },
     'POST',
     'User',
-    { user: 'User' },
+    modelMap,
     { Prefer: 'return=representation' },
   )
   expect(res).toBeInstanceOf(SupabaseResponse)
@@ -197,10 +191,11 @@ test('make hooks; createMany', async () => {
       json: () => Promise.resolve([{ id: 1 }, { id: 2 }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
     .beforeRequest({
-      clientMethod: 'user.createMany',
+      rootField: 'createManyUser',
+
       args: { data: [{ name: 'foo' }, { name: 'bar' }] },
     })
     .catch((res) => res)
@@ -209,7 +204,7 @@ test('make hooks; createMany', async () => {
     { data: [{ name: 'foo' }, { name: 'bar' }] },
     'POST',
     'User',
-    { user: 'User' },
+    modelMap,
     { Prefer: 'return=representation' },
   )
   expect(res).toBeInstanceOf(SupabaseResponse)
@@ -224,10 +219,10 @@ test('make hooks; createMany with skipDuplicates', async () => {
       json: () => Promise.resolve([{ id: 2 }]),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
     .beforeRequest({
-      clientMethod: 'user.createMany',
+      rootField: 'createManyUser',
       args: { data: [{ name: 'foo' }, { name: 'bar' }], skipDuplicates: true },
     })
     .catch((res) => res)
@@ -236,7 +231,7 @@ test('make hooks; createMany with skipDuplicates', async () => {
     { data: [{ name: 'foo' }, { name: 'bar' }], skipDuplicates: true },
     'POST',
     'User',
-    { user: 'User' },
+    modelMap,
     { Prefer: 'return=representation,resolution=ignore-duplicates' },
   )
   expect(res).toBeInstanceOf(SupabaseResponse)
@@ -255,9 +250,9 @@ test('make hooks; with error', async () => {
         }),
     }),
   )
-  const hooks = makeHooks(mockFetcher, { user: 'User' })
+  const hooks = makeHooks(mockFetcher, modelMap)
   const res = await hooks
-    .beforeRequest({ clientMethod: 'user.findFirst' })
+    .beforeRequest({ rootField: 'findFirstUser' })
     .catch((res) => res)
   expect(res).toBeInstanceOf(SupabaseResponse)
   expect(res.data).toBeNull()

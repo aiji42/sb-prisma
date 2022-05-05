@@ -1,12 +1,8 @@
 import { makeSelect } from '../helpers/makeSelect'
-
-const modelMapper: Record<string, string> = {
-  'User.Team': 'Team',
-  'Team.users': 'User',
-}
+import * as modelMap from './__fixtures__/modelMapping'
 
 test('make select statement', () => {
-  expect(makeSelect({}, 'User', modelMapper)).toEqual('*')
+  expect(makeSelect({}, 'User', modelMap)).toEqual('*')
 })
 
 test('make select statement with related table', () => {
@@ -17,7 +13,7 @@ test('make select statement with related table', () => {
       Team: true,
     },
   }
-  expect(makeSelect(arg, 'User', modelMapper)).toEqual('id,name,Team:Team(*)')
+  expect(makeSelect(arg, 'User', modelMap)).toEqual('id,name,Team:_team(*)')
 })
 
 test('make select statement with alias', () => {
@@ -40,7 +36,7 @@ test('make select statement with alias', () => {
       },
     },
   }
-  expect(makeSelect(arg, 'Team', modelMapper)).toEqual(
-    'id,name,users:User(id,name,Team:Team(id,name,users:User(*)))',
+  expect(makeSelect(arg, 'Team', modelMap)).toEqual(
+    'id,name,users:User(id,name,Team:_team(id,name,users:User(*)))',
   )
 })

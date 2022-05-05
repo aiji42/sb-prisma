@@ -1,4 +1,5 @@
 import { makeFetcher } from '../helpers/makeFetcher'
+import * as modelMap from './__fixtures__/modelMapping'
 
 const fetchMock = jest.fn()
 
@@ -21,7 +22,7 @@ test('make fetcher', () => {
     },
     'GET',
     'User',
-    {},
+    modelMap,
     { Additional: 'Additional header' },
   )
 
@@ -51,13 +52,13 @@ test('make fetcher with data and POST/PATCH method', () => {
       data: { name: 'foo' },
     },
     'POST',
-    'User',
-    {},
+    'Team',
+    modelMap,
     { Additional: 'Additional header' },
   )
 
   expect(fetchMock).toBeCalledWith(
-    'https://example.supabase.co/rest/v1/User?select=*&and=%28id.gt.10%29',
+    'https://example.supabase.co/rest/v1/_team?select=*&and=%28id.gt.10%29',
     {
       method: 'POST',
       headers: {
