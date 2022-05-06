@@ -9,6 +9,7 @@ import {
   writeTableMapping,
 } from './utils/writeFiles'
 import { formatFile } from './utils/formatFile'
+import { patching } from './utils/patching'
 
 const { version, name: generatorName } = require('../package.json')
 
@@ -44,5 +45,7 @@ generatorHandler({
 
     await project.save()
     await formatFile(indexFile.getFilePath())
+
+    patching()
   },
 })
