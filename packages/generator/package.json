@@ -33,10 +33,10 @@
     "ts-jest": "27.1.4",
     "typescript": "4.6.3"
   },
-  "homepage": "https://github.com/aiji42/prisma-generator-supabase",
+  "homepage": "https://github.com/aiji42/sb-prisma",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aiji42/prisma-generator-supabase"
+    "url": "https://github.com/aiji42/sb-prisma"
   },
   "author": "Aiji Uejima <aiji42@gmail.com>",
   "keywords": [
