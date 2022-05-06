@@ -9,7 +9,6 @@
     "@commitlint/config-conventional": "16.2.1",
     "@lerna-lite/cli": "^1.1.1",
     "@lerna-lite/run": "^1.1.1",
-    "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "husky": "7.0.4",
     "multi-semantic-release": "^2.12.0",
@@ -21,6 +20,6 @@
     "dev": "lerna run --parallel dev",
     "test": "lerna run --parallel test",
     "build": "lerna run build",
-    "semantic-release": "multi-semantic-release"
+    "semantic-release": "multi-semantic-release --ignore-private-packages"
   }
 }
