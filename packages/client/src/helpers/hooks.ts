@@ -54,8 +54,10 @@ const deleteOne =
     })
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
     const data = await res.json()
-    // TODO
-    if (data.length < 1) throw Error('')
+    if (data.length < 1)
+      throw Error(
+        'An operation failed because it depends on one or more records that were required but not found. Record to delete does not exist.',
+      )
     throw new SupabaseResponse({ data: singly(data) })
   }
 
@@ -127,8 +129,10 @@ const getModelAndMethod = (
   modelMapping: ModelMapping,
 ): [string, string] => {
   const { model, method } = modelMapping.operationMapping[rootField] ?? {}
-  // TODO
-  if (!(model && method)) throw new Error('')
+  if (!(model && method))
+    throw new Error(
+      `The definition of ${rootField} does not exist in modelMapping.operationMapping.`,
+    )
 
   return [model, method]
 }

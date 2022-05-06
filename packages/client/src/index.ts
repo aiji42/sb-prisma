@@ -26,8 +26,8 @@ export const prepare = ({
 }
 
 export const createClient = <T>(_PrismaClient: any): T => {
-  // TODO
-  if (!(_modelMap && _endpoint && _apikey && _fetch)) throw new Error('')
+  if (!(_modelMap && _endpoint && _apikey && _fetch))
+    throw new Error('Initialize the configuration by `prepare` method')
   const fetcher = makeFetcher(_endpoint, _apikey, _fetch)
   return new _PrismaClient({
     __internal: {

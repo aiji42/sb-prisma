@@ -18,8 +18,8 @@ export const patching = () => {
     const original = fs.readFileSync(path, { encoding: 'utf8' })
     if (original.includes(after)) continue
 
-    // TODO
-    if (!original.includes(before)) throw new Error('')
+    if (!original.includes(before))
+      throw new Error(`${generatorName}: The patch failed for ${mod}`)
 
     const patched = original.replace(before, after)
     fs.writeFileSync(path, patched)
