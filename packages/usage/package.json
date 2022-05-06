@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@prisma/client": "3.12.0",
+    "@prisma-sb/client": "0.0.0",
+    "@prisma-sb/generator": "0.0.0",
     "@supabase/supabase-js": "^1.35.2",
     "dotenv": "^16.0.0",
     "node-fetch": "^2.6.7"
@@ -18,7 +20,6 @@
     "@types/node": "17.0.27",
     "@types/node-fetch": "^2.6.1",
     "prisma": "3.12.0",
-    "prisma-generator-supabase": "1.0.0",
     "ts-node": "^10.7.0",
     "typescript": "4.6.3"
   }

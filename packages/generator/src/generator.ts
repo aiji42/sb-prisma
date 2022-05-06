@@ -1,31 +1,48 @@
-import { generatorHandler, GeneratorOptions } from '@prisma/generator-helper'
+import { generatorHandler } from '@prisma/generator-helper'
 import { logger } from '@prisma/sdk'
-import path from 'path'
-import { GENERATOR_NAME } from './constants'
-import { genEnum } from './helpers/genEnum'
-import { writeFileSafely } from './utils/writeFileSafely'
+import { Project } from 'ts-morph'
+import {
+  writeImports,
+  writeOperationMapping,
+  writePrepareFunction,
+  writeRelationMapping,
+  writeTableMapping,
+} from './utils/writeFiles'
+import { formatFile } from './utils/formatFile'
 
-const { version } = require('../package.json')
+const { version, name: generatorName } = require('../package.json')
 
 generatorHandler({
   onManifest() {
-    logger.info(`${GENERATOR_NAME}:Registered`)
+    logger.info(`${generatorName}:Registered`)
     return {
       version,
-      defaultOutput: '../generated',
-      prettyName: GENERATOR_NAME,
+      defaultOutput: '../prisma-sb',
+      prettyName: generatorName,
     }
   },
-  onGenerate: async (options: GeneratorOptions) => {
-    options.dmmf.datamodel.enums.forEach(async (enumInfo) => {
-      const tsEnum = genEnum(enumInfo)
+  onGenerate: async (options) => {
+    const project = new Project()
+    const outputPath = options.generator.output?.value ?? ''
 
-      const writeLocation = path.join(
-        options.generator.output?.value!,
-        `${enumInfo.name}.ts`,
-      )
+    const indexFile = project.createSourceFile(
+      `${outputPath}/index.ts`,
+      {},
+      { overwrite: true },
+    )
 
-      await writeFileSafely(writeLocation, tsEnum)
+    writeImports(indexFile, options)
+    writeOperationMapping(indexFile, options)
+    writeRelationMapping(indexFile, options)
+    writeTableMapping(indexFile, options)
+    writePrepareFunction(indexFile, options)
+
+    indexFile.formatText({
+      indentSize: 2,
+      convertTabsToSpaces: true,
     })
+
+    await project.save()
+    await formatFile(indexFile.getFilePath())
   },
 })

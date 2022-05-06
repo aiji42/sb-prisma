@@ -1,4 +1,4 @@
-import { Args, NegativeOperators, Operators, Scalar, Where } from './types'
+import { Args, NegativeOperators, Operators, Scalar, Where } from '../types'
 
 // TODO: related table
 export const makeWhere = (arg: Args) => {

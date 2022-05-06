@@ -1,6 +1,9 @@
 generator custom_generator {
-  provider = "node ../../node_modules/prisma-generator-supabase"
-  output   = "../types"
+  provider    = "prisma-sb"
+//  output      = "../types"
+  endpoint    = "SUPABASE_URL"
+  apikey      = "SUPABASE_ANON_KEY"
+  fetchModule = "node-fetch"
 }
 
 generator client {

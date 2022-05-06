@@ -1,8 +1,7 @@
 import { makeHooks } from './helpers/hooks'
 import { makeFetcher, Fetch } from './helpers/makeFetcher'
 import SupabaseResponse from './response/SupabaseResponse'
-import type { PrismaClient as PrismaClientType } from '@prisma/client/scripts/default-index'
-import { ModelMapping } from './helpers/types'
+import { ModelMapping } from './types'
 
 let _modelMap: undefined | ModelMapping
 let _endpoint: undefined | string
@@ -26,11 +25,10 @@ export const prepare = ({
   _modelMap = modelMap
 }
 
-export const createClient = <T>(_PrismaClient: PrismaClientType): T => {
+export const createClient = <T>(_PrismaClient: any): T => {
   // TODO
   if (!(_modelMap && _endpoint && _apikey && _fetch)) throw new Error('')
   const fetcher = makeFetcher(_endpoint, _apikey, _fetch)
-  // @ts-ignore
   return new _PrismaClient({
     __internal: {
       hooks: makeHooks(fetcher, _modelMap),

@@ -1,4 +1,4 @@
-import { Args, ModelMapping } from './types'
+import { Args, ModelMapping } from '../types'
 
 export const makeSelect = (
   args: Args,

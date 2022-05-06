@@ -6,9 +6,19 @@
   "devDependencies": {
     "@commitlint/cli": "16.2.3",
     "@commitlint/config-conventional": "16.2.1",
-    "husky": "7.0.4"
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@lerna-lite/cli": "^1.1.1",
+    "@lerna-lite/run": "^1.1.1",
+    "husky": "7.0.4",
+    "prettier": "^2.6.2",
+    "semantic-release": "^19.0.2"
   },
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "dev": "lerna run --parallel dev",
+    "test": "lerna run --parallel test",
+    "build": "lerna run build",
+    "release": "lerna run release"
   }
 }

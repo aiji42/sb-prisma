@@ -1,24 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import 'dotenv/config'
-import {
-  createClient,
-  prepare,
-  sb,
-} from 'prisma-generator-supabase/dist/client'
-import fetch from 'node-fetch'
-import * as modelMap from './supabase-prisma'
-
-prepare({
-  endpoint: process.env.SUPABASE_URL ?? '',
-  apikey: process.env.SUPABASE_ANON_KEY ?? '',
-  // @ts-ignore
-  fetch: (url, init) => {
-    console.log(init?.method, url)
-    // @ts-ignore
-    return fetch(url, init)
-  },
-  modelMap,
-})
+import { createClient, sb } from '@prisma-sb/client'
+import './prisma-sb'
 
 const prisma = createClient<PrismaClient>(PrismaClient)
 const db = new PrismaClient()

@@ -1,4 +1,4 @@
-import { Args, ModelMapping } from './types'
+import { Args, ModelMapping } from '../types'
 import { makeSelect } from './makeSelect'
 import { makeOrder } from './makeOrder'
 import { makeWhere } from './makeWhere'

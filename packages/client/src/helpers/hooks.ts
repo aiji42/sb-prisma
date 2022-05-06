@@ -1,4 +1,4 @@
-import { Args, ModelMapping } from './types'
+import { Args, ModelMapping } from '../types'
 import SupabaseResponse from '../response/SupabaseResponse'
 import { Fetcher } from './makeFetcher'
 

@@ -1,4 +1,4 @@
-import { Args } from './types'
+import { Args } from '../types'
 
 export const makeOrder = (args: Args) => {
   if (!args.orderBy) return ''

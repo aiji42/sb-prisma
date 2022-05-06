@@ -1,5 +1,5 @@
 import { makeWhere } from '../helpers/makeWhere'
-import { Args } from '../helpers/types'
+import { Args } from '../types'
 
 test('make where statement', () => {
   expect(
