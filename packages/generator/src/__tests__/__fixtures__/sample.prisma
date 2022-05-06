@@ -1,3 +1,23 @@
+generator generator_minimum {
+  provider    = "sb-prisma"
+}
+
+generator generator_with_sb_envs {
+  provider    = "sb-prisma"
+  endpoint    = "SUPABASE_URL_CUSTOM"
+  apikey      = "SUPABASE_ANON_KEY_CUSTOM"
+}
+
+generator generator_with_browser_fetch {
+  provider    = "sb-prisma"
+  fetchModule = "browser"
+}
+
+generator generator_with_node_fetch {
+  provider    = "sb-prisma"
+  fetchModule = "node-fetch"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")

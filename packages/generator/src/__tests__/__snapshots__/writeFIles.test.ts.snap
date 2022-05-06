@@ -84,7 +84,7 @@ exports[`writePrepareFunction; with environments 1`] = `
 
 exports[`writePrepareFunction; with environments and specify keys 1`] = `
 "prepare({
-    endpoint: process.env.SUPABASE_URL || process.env.SUPABASE_URL_CUSTOM || \\"this is SUPABASE_URL_CUSTOM\\",apikey: process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_URL_CUSTOM || \\"this is SUPABASE_URL_CUSTOM\\",
+    endpoint: process.env.SUPABASE_URL || process.env.SUPABASE_URL_CUSTOM || \\"this is SUPABASE_URL_CUSTOM\\",apikey: process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY_CUSTOM || \\"this is SUPABASE_ANON_KEY_CUSTOM\\",
     //@ts-ignore
     fetch,modelMap: {
         operationMapping,relationMapping,tableMapping,

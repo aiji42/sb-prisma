@@ -7,7 +7,10 @@ import {
   writeTableMapping,
 } from '../utils/writeFiles'
 import { GeneratorOptions } from '@prisma/generator-helper'
-import { getSampleDMMF } from './__fixtures__/getSampleDMMF'
+import {
+  getSampleGenerator,
+  getSampleDMMF,
+} from './__fixtures__/getSampleSchema'
 
 let file: SourceFile
 
@@ -19,10 +22,11 @@ beforeEach(() => {
 
   process.env = {
     ...oldEnv,
+    DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
     SUPABASE_URL: 'this is SUPABASE_URL',
     SUPABASE_ANON_KEY: 'this is SUPABASE_ANON_KEY',
     SUPABASE_URL_CUSTOM: 'this is SUPABASE_URL_CUSTOM',
-    SUPABASE_ANON_KEY_CUSTOME: 'this is SUPABASE_ANON_KEY_CUSTOME',
+    SUPABASE_ANON_KEY_CUSTOM: 'this is SUPABASE_ANON_KEY_CUSTOM',
   }
 })
 
@@ -30,22 +34,27 @@ afterEach(() => {
   process.env = { ...oldEnv }
 })
 
-test('writeImports; with no fetchModule', () => {
-  writeImports(file, { generator: { config: {} } } as GeneratorOptions)
+test('writeImports; with no fetchModule', async () => {
+  const options = {
+    generator: await getSampleGenerator('generator_minimum'),
+  } as GeneratorOptions
+  writeImports(file, options)
   expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writeImports; with fetchModule (browser)', () => {
-  writeImports(file, {
-    generator: { config: { fetchModule: 'browser' } },
-  } as unknown as GeneratorOptions)
+test('writeImports; with fetchModule (browser)', async () => {
+  const options = {
+    generator: await getSampleGenerator('generator_with_browser_fetch'),
+  } as GeneratorOptions
+  writeImports(file, options)
   expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writeImports; with fetchModule (node-fetch)', () => {
-  writeImports(file, {
-    generator: { config: { fetchModule: 'node-fetch' } },
-  } as unknown as GeneratorOptions)
+test('writeImports; with fetchModule (node-fetch)', async () => {
+  const options = {
+    generator: await getSampleGenerator('generator_with_node_fetch'),
+  } as GeneratorOptions
+  writeImports(file, options)
   expect(file.getFullText()).toMatchSnapshot()
 })
 
@@ -76,28 +85,30 @@ test('writeTableMapping', async () => {
   expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writePrepareFunction; with no environments', () => {
-  process.env = { ...oldEnv }
-  const options = { generator: { config: {} } } as GeneratorOptions
-  writePrepareFunction(file, options)
-  expect(file.getFullText()).toMatchSnapshot()
-})
-
-test('writePrepareFunction; with environments', () => {
-  const options = { generator: { config: {} } } as GeneratorOptions
-  writePrepareFunction(file, options)
-  expect(file.getFullText()).toMatchSnapshot()
-})
-
-test('writePrepareFunction; with environments and specify keys', () => {
+test('writePrepareFunction; with no environments', async () => {
+  process.env = {
+    ...oldEnv,
+    DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
+  }
   const options = {
-    generator: {
-      config: {
-        endpoint: 'SUPABASE_URL_CUSTOM',
-        apikey: 'SUPABASE_URL_CUSTOM',
-      },
-    },
-  } as unknown as GeneratorOptions
+    generator: await getSampleGenerator('generator_minimum'),
+  } as GeneratorOptions
+  writePrepareFunction(file, options)
+  expect(file.getFullText()).toMatchSnapshot()
+})
+
+test('writePrepareFunction; with environments', async () => {
+  const options = {
+    generator: await getSampleGenerator('generator_minimum'),
+  } as GeneratorOptions
+  writePrepareFunction(file, options)
+  expect(file.getFullText()).toMatchSnapshot()
+})
+
+test('writePrepareFunction; with environments and specify keys', async () => {
+  const options = {
+    generator: await getSampleGenerator('generator_with_sb_envs'),
+  } as GeneratorOptions
   writePrepareFunction(file, options)
   expect(file.getFullText()).toMatchSnapshot()
 })
