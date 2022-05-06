@@ -1,3 +1,10 @@
+## @sb-prisma/client [1.0.1](https://github.com/aiji42/sb-prisma/compare/@sb-prisma/client@1.0.0...@sb-prisma/client@1.0.1) (2022-05-06)
+
+
+### Bug Fixes
+
+* new release ([969e59e](https://github.com/aiji42/sb-prisma/commit/969e59ebe0abe14011fd42386276473f9268c3c8))
+
 # @sb-prisma/client 1.0.0 (2022-05-06)
 
 
