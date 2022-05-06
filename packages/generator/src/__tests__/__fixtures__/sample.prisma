@@ -4,9 +4,20 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id     Int     @id @default(autoincrement())
+  email  String  @unique
+  name   String?
+  teamId Int?
+
+  Team   Team? @relation(fields: [teamId], references: [id])
+}
+
+model Team {
+  id   Int    @id @default(autoincrement())
+  name String
+  users User[]
+
+  @@map("teams")
 }
 
 enum NotificationType {
@@ -26,10 +37,4 @@ enum Language {
   Go
   Python
   Cpp
-}
-
-enum State {
-  Active
-  Pending
-  Banned
 }

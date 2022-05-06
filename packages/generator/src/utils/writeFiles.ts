@@ -2,10 +2,11 @@ import { SourceFile, VariableDeclarationKind } from 'ts-morph'
 import { GeneratorOptions } from '@prisma/generator-helper'
 
 export const writeImports = (file: SourceFile, options: GeneratorOptions) => {
-  if (options.generator.config.fetchModule !== 'browser')
+  const { fetchModule = 'browser' } = options.generator.config
+  if (fetchModule !== 'browser')
     file.addImportDeclaration({
       defaultImport: 'fetch',
-      moduleSpecifier: options.generator.config.fetchModule ?? '',
+      moduleSpecifier: fetchModule ?? '',
     })
   file.addImportDeclaration({
     namedImports: ['prepare'],
