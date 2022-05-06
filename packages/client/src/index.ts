@@ -1,4 +1,4 @@
-import { makeHooks } from './helpers/hooks'
+import { makeHooks } from './helpers/makeHooks'
 import { makeFetcher, Fetch } from './helpers/makeFetcher'
 import SupabaseResponse from './response/SupabaseResponse'
 import { ModelMapping } from './types'

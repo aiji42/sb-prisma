@@ -1,4 +1,4 @@
-import { makeHooks } from '../helpers/hooks'
+import { makeHooks } from '../helpers/makeHooks'
 import SupabaseResponse from '../response/SupabaseResponse'
 import * as modelMap from './__fixtures__/modelMapping'
 
