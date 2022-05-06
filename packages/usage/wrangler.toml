@@ -1,0 +1,5 @@
+name = "sb-prisma-usage"
+workers_dev = true
+
+[build]
+command = ""
