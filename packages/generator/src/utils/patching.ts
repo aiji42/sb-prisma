@@ -4,25 +4,52 @@ import { logger } from '@prisma/sdk'
 
 const { name: generatorName } = require('../../package.json')
 
-const before = 'this.hooks.beforeRequest('
-const after = 'await this.hooks.beforeRequest('
+const patchMappings = [
+  {
+    module: '@prisma/client/runtime/index.js',
+    patches: [
+      {
+        target: 'this.hooks.beforeRequest(',
+        replaceTo: 'await this.hooks.beforeRequest(',
+        skipIf: (base: string) =>
+          base.includes('await this.hooks.beforeRequest('),
+      },
+    ],
+  },
+  {
+    module: '@prisma/client/runtime/proxy.js',
+    patches: [
+      {
+        target: 'this.hooks.beforeRequest(',
+        replaceTo: 'await this.hooks.beforeRequest(',
+        skipIf: (base: string) =>
+          base.includes('await this.hooks.beforeRequest('),
+      },
+      {
+        target: 'this.pushSchema()',
+        replaceTo: '{}',
+        skipIf: (base: string) => !base.includes('this.pushSchema()'),
+      },
+    ],
+  },
+]
 
 export const patching = () => {
-  for (const mod of [
-    '@prisma/client/runtime/index.js',
-    '@prisma/client/runtime/proxy.js',
-  ]) {
-    const path = moduleResolve(mod)
-    if (!path) continue
-
+  patchMappings.forEach(({ module, patches }) => {
+    const path = moduleResolve(module)
+    if (!path) return
     const original = fs.readFileSync(path, { encoding: 'utf8' })
-    if (original.includes(after)) continue
 
-    if (!original.includes(before))
-      throw new Error(`${generatorName}: The patch failed for ${mod}`)
+    patches.forEach(({ skipIf, target, replaceTo }) => {
+      if (skipIf(original)) return
 
-    const patched = original.replace(before, after)
-    fs.writeFileSync(path, patched)
-    logger.info(`${generatorName}:Patched ${mod}`)
-  }
+      if (!original.includes(target))
+        throw new Error(`${generatorName}: The patch failed for ${module}`)
+
+      const patched = original.replace(target, replaceTo)
+      fs.writeFileSync(path, patched)
+    })
+
+    logger.info(`${generatorName}:Patched ${module}`)
+  })
 }
