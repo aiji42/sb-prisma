@@ -1,24 +1,25 @@
 import { PrismaClient } from '@prisma/client'
-import 'dotenv/config'
 import { createClient, sb } from '@sb-prisma/client'
 import './sb-prisma'
+import { Hono } from 'hono'
 
-const prisma = createClient<PrismaClient>(PrismaClient)
 // const db = new PrismaClient()
 
-const main = async () => {
+const app = new Hono()
+
+app.get('/', async (c) => {
   await prepare()
 
-  const user = await sb(prisma.user.findFirst())
-  console.log('===== prisma.user.findFirst() =====')
+  const user = await sb(prisma().user.findFirst())
+  console.log('===== prisma().user.findFirst() =====')
   console.dir(user)
 
   console.log(
-    '===== prisma.user.findMany() with OR condition and ordered desc =====',
+    '===== prisma().user.findMany() with OR condition and ordered desc =====',
   )
   console.dir(
     await sb(
-      prisma.user.findMany({
+      prisma().user.findMany({
         select: {
           id: true,
           name: true,
@@ -43,10 +44,10 @@ const main = async () => {
     ),
   )
 
-  console.log('===== prisma.team.findMany() with double nested model =====')
+  console.log('===== prisma().team.findMany() with double nested model =====')
   console.dir(
     await sb(
-      prisma.team.findMany({
+      prisma().team.findMany({
         select: {
           id: true,
           name: false,
@@ -69,69 +70,74 @@ const main = async () => {
     { depth: 4 },
   )
 
-  console.log('===== prisma.user.create() =====')
+  console.log('===== prisma().user.create() =====')
   console.dir(
     await sb(
-      prisma.user.create({
+      prisma().user.create({
         data: { name: 'ega', email: 'ega@example.com' },
       }),
     ),
   )
 
-  console.log('===== prisma.user.createMany() with skipDuplicates =====')
+  console.log('===== prisma().user.createMany() with skipDuplicates =====')
   user &&
     console.dir(
       await sb(
-        prisma.user.createMany({
+        prisma().user.createMany({
           data: [user],
           skipDuplicates: true,
         }),
       ),
     )
 
-  console.log('===== prisma.user.update() =====')
+  console.log('===== prisma().user.update() =====')
   user &&
     console.dir(
       await sb(
-        prisma.user.update({
+        prisma().user.update({
           data: { name: 'hoo' },
           where: { id: user.id },
         }),
       ),
     )
 
-  console.log('===== prisma.user.updateMany() =====')
+  console.log('===== prisma().user.updateMany() =====')
   console.dir(
     await sb(
-      prisma.user.updateMany({
+      prisma().user.updateMany({
         data: { name: 'hee' },
       }),
     ),
   )
 
-  console.log('===== prisma.user.delete() =====')
-  user && console.dir(await sb(prisma.user.delete({ where: { id: user.id } })))
+  console.log('===== prisma().user.delete() =====')
+  user &&
+    console.dir(await sb(prisma().user.delete({ where: { id: user.id } })))
 
-  console.log('===== prisma.team.deleteMany() =====')
+  console.log('===== prisma().team.deleteMany() =====')
   console.dir(
     await sb(
-      prisma.team.deleteMany({
+      prisma().team.deleteMany({
         where: { name: { contains: 'team' } },
       }),
     ),
   )
-}
+
+  return c.json({ message: 'OK' })
+})
+
+app.fire()
 
 const prepare = async () => {
   await cleanUp()
   await sb(
-    prisma.team.createMany({
+    prisma().team.createMany({
       data: [{ name: 'team1' }, { name: 'team2' }, { name: 'team3' }],
     }),
   )
-  const teams = await sb(prisma.team.findMany())
+  const teams = await sb(prisma().team.findMany())
   await sb(
-    prisma.user.createMany({
+    prisma().user.createMany({
       data: [
         { name: 'Foo', email: 'foo@example.com', teamId: teams[0].id },
         { name: 'Bar', email: 'bar@example.com', teamId: teams[0].id },
@@ -143,12 +149,12 @@ const prepare = async () => {
 
 const cleanUp = async () => {
   await Promise.all([
-    sb(prisma.user.deleteMany()),
-    sb(prisma.team.deleteMany()),
+    sb(prisma().user.deleteMany()),
+    sb(prisma().team.deleteMany()),
   ])
   console.log('complete cleanup 🧹')
 }
 
-main()
-  .catch(console.log)
-  .finally(() => cleanUp())
+const prisma = () => {
+  return createClient<PrismaClient>(PrismaClient)
+}

@@ -4,7 +4,13 @@
   "version": "1.0.0",
   "main": "src/app.js",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "NODE_ENV=production node build.js",
+    "dev:build": "NODE_ENV=development WATCH=true node build.js",
+    "dev:minflare": "NODE_ENV=development miniflare ./dist/index.js --watch",
+    "dev": "NODE_ENV=development npm run build && run-p dev:*",
+    "generate": "PRISMA_CLIENT_ENGINE_TYPE=dataproxy npx prisma generate"
+  },
   "prisma": {
     "seed": "ts-node ./prisma/seed.ts"
   },
@@ -14,11 +20,16 @@
     "@sb-prisma/generator": "0.0.0",
     "@supabase/supabase-js": "^1.35.2",
     "dotenv": "^16.0.0",
+    "hono": "^1.1.1",
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "@types/node": "17.0.27",
     "@types/node-fetch": "^2.6.1",
+    "esbuild": "^0.14.38",
+    "esbuild-plugin-alias": "^0.2.1",
+    "miniflare": "^2.4.0",
+    "npm-run-all": "^4.1.5",
     "prisma": "3.12.0",
     "ts-node": "^10.7.0",
     "typescript": "4.6.3"
