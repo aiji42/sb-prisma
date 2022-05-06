@@ -42,5 +42,8 @@
     "prisma",
     "prisma2",
     "generator"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

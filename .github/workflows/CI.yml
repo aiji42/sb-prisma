@@ -47,8 +47,6 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Build 🏗
-        run: yarn build
       - name: Publish 🚀
         run: yarn run semantic-release
         env:
