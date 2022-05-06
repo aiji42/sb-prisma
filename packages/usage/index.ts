@@ -7,7 +7,6 @@ const prisma = createClient<PrismaClient>(PrismaClient)
 const db = new PrismaClient()
 
 const main = async () => {
-  await sb(prisma.user.delete({ where: { id: 1 } }))
   const user = await sb(prisma.user.findFirst())
   console.dir(user)
 

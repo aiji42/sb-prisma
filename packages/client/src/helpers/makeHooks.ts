@@ -131,7 +131,7 @@ const getModelAndMethod = (
   const { model, method } = modelMapping.operationMapping[rootField] ?? {}
   if (!(model && method))
     throw new Error(
-      `The definition of ${rootField} does not exist in modelMapping.operationMapping.`,
+      `@sb-prisma/client Error: The definition of ${rootField} does not exist in modelMapping.operationMapping.`,
     )
 
   return [model, method]

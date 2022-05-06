@@ -1,5 +1,10 @@
 type Data = unknown[] | Record<string, unknown>
-type SupabaseError = { message: string; hint: string }
+type SupabaseError = {
+  message: string
+  hint: string | null
+  code?: string
+  details?: string
+}
 
 class SupabaseResponse {
   public data: null | Data

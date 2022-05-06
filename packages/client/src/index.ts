@@ -27,7 +27,9 @@ export const prepare = ({
 
 export const createClient = <T>(_PrismaClient: any): T => {
   if (!(_modelMap && _endpoint && _apikey && _fetch))
-    throw new Error('Initialize the configuration by `prepare` method')
+    throw new Error(
+      '@sb-prisma/client Error: Initialize the configuration by `prepare` method',
+    )
   const fetcher = makeFetcher(_endpoint, _apikey, _fetch)
   return new _PrismaClient({
     __internal: {
@@ -38,7 +40,10 @@ export const createClient = <T>(_PrismaClient: any): T => {
 
 const handler = (res: unknown) => {
   if (res instanceof SupabaseResponse) {
-    if (res.error) throw res.error
+    if (res.error) {
+      console.error(`@sb-prisma/client Error: ${res.error.message}`)
+      throw res.error
+    }
     return res.data
   }
   throw res
