@@ -1,5 +1,5 @@
 generator custom_generator {
-  provider    = "prisma-sb"
+  provider    = "sb-prisma"
 //  output      = "../types"
   endpoint    = "SUPABASE_URL"
   apikey      = "SUPABASE_ANON_KEY"

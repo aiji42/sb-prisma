@@ -17,7 +17,7 @@ generatorHandler({
     logger.info(`${generatorName}:Registered`)
     return {
       version,
-      defaultOutput: '../prisma-sb',
+      defaultOutput: '../sb-prisma',
       prettyName: generatorName,
     }
   },

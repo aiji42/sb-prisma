@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import 'dotenv/config'
-import { createClient, sb } from '@prisma-sb/client'
-import './prisma-sb'
+import { createClient, sb } from '@sb-prisma/client'
+import './sb-prisma'
 
 const prisma = createClient<PrismaClient>(PrismaClient)
 const db = new PrismaClient()

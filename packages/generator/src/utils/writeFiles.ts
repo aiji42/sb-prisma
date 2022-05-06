@@ -9,7 +9,7 @@ export const writeImports = (file: SourceFile, options: GeneratorOptions) => {
     })
   file.addImportDeclaration({
     namedImports: ['prepare'],
-    moduleSpecifier: '@prisma-sb/client',
+    moduleSpecifier: '@sb-prisma/client',
   })
 }
 

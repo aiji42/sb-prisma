@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@prisma/client": "3.12.0",
-    "@prisma-sb/client": "0.0.0",
-    "@prisma-sb/generator": "0.0.0",
+    "@sb-prisma/client": "0.0.0",
+    "@sb-prisma/generator": "0.0.0",
     "@supabase/supabase-js": "^1.35.2",
     "dotenv": "^16.0.0",
     "node-fetch": "^2.6.7"
