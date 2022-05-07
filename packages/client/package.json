@@ -33,7 +33,8 @@
   "keywords": [
     "prisma",
     "prisma2",
-    "generator"
+    "generator",
+    "supabase"
   ],
   "publishConfig": {
     "access": "public"
