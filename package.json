@@ -1,5 +1,6 @@
 {
   "name": "sb-prisma",
+  "description": "This is a project to make the supabase REST API available from PrismaClient.",
   "private": true,
   "workspaces": [
     "packages/*"
