@@ -1,7 +1,7 @@
 {
   "name": "@sb-prisma/client",
   "description": "Automatically generates database code for supabse-js from prisma schema.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/index.js",
   "license": "MIT",
   "engines": {
@@ -14,7 +14,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sb-prisma/generator": "1.1.0"
+    "@sb-prisma/generator": "1.1.1"
   },
   "devDependencies": {
     "@types/jest": "27.5.0",
