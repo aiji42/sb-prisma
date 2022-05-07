@@ -34,7 +34,7 @@ yarn add @sb-prisma/client
 ```prisma
 generator sb_prisma {
   provider       = "sb-prisma"
-  output         = "../sb-zod" // (default) the directory where generated code for initialization will be saved
+  output         = "../sb-prisma" // (default) the directory where generated code for initialization will be saved
   endpoint       = "SUPABSE_URL" // (default) the environment variable key that pointing to the Supabase endpoint
   apikey         = "SUPABASE_ANON_KEY" // (default) the environment variable key that pointing to the Supabase api key
   
