@@ -1,7 +1,7 @@
 {
   "name": "@sb-prisma/generator",
   "description": "Automatically generates database code for supabse-js from prisma schema.",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "dist/generator.js",
   "license": "MIT",
   "bin": {
