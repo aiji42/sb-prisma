@@ -1,6 +1,8 @@
 import fetch from 'node-fetch'
 import { prepare } from '@sb-prisma/client'
 
+export { createClient, sb } from '@sb-prisma/client'
+
 const operationMapping = {
   aggregateUser: {
     model: 'User',

@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { createClient, sb } from '@sb-prisma/client'
-import './sb-prisma'
+import { createClient, sb } from './sb-prisma'
 import { Hono } from 'hono'
 
 // const db = new PrismaClient()

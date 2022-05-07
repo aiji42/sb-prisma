@@ -1,7 +1,10 @@
 import { SourceFile, VariableDeclarationKind } from 'ts-morph'
 import { GeneratorOptions } from '@prisma/generator-helper'
 
-export const writeImports = (file: SourceFile, options: GeneratorOptions) => {
+export const writeImportsAndExports = (
+  file: SourceFile,
+  options: GeneratorOptions,
+) => {
   const { fetchModule = 'browser' } = options.generator.config
   if (fetchModule !== 'browser')
     file.addImportDeclaration({
@@ -10,6 +13,10 @@ export const writeImports = (file: SourceFile, options: GeneratorOptions) => {
     })
   file.addImportDeclaration({
     namedImports: ['prepare'],
+    moduleSpecifier: '@sb-prisma/client',
+  })
+  file.addExportDeclaration({
+    namedExports: ['createClient', 'sb'],
     moduleSpecifier: '@sb-prisma/client',
   })
 }
