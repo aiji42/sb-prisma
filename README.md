@@ -1,6 +1,7 @@
 [![npm version](https://badge.fury.io/js/@sb-prisma%2Fclient.svg)](https://badge.fury.io/js/@sb-prisma%2Fclient)
 [![lerna--lite](https://img.shields.io/badge/maintained%20with-lerna--lite-cc00ff)](https://github.com/ghiscoding/lerna-lite)
 [![CI](https://github.com/aiji42/sb-prisma/actions/workflows/CI.yml/badge.svg)](https://github.com/aiji42/sb-prisma/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/aiji42/sb-prisma/branch/main/graph/badge.svg?token=W7KAYUXF3V)](https://codecov.io/gh/aiji42/sb-prisma)
 
 # sb-prisma
 
