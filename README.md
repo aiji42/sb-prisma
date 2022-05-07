@@ -35,7 +35,7 @@ yarn add @sb-prisma/client
 generator sb_prisma {
   provider       = "sb-prisma"
   output         = "../sb-prisma" // (default) the directory where generated code for initialization will be saved
-  endpoint       = "SUPABSE_URL" // (default) the environment variable key that pointing to the Supabase endpoint
+  endpoint       = "SUPABASE_URL" // (default) the environment variable key that pointing to the Supabase endpoint
   apikey         = "SUPABASE_ANON_KEY" // (default) the environment variable key that pointing to the Supabase api key
   
   // fetchModule = "node-fetch" // if you want to specify the module name for fetch (must be exported by default)
