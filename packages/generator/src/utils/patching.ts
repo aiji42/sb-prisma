@@ -11,8 +11,6 @@ const patchMappings = [
       {
         target: 'this.hooks.beforeRequest(',
         replaceTo: 'await this.hooks.beforeRequest(',
-        skipIf: (base: string) =>
-          base.includes('await this.hooks.beforeRequest('),
       },
     ],
   },
@@ -22,13 +20,14 @@ const patchMappings = [
       {
         target: 'this.hooks.beforeRequest(',
         replaceTo: 'await this.hooks.beforeRequest(',
-        skipIf: (base: string) =>
-          base.includes('await this.hooks.beforeRequest('),
       },
       {
         target: 'this.pushSchema()',
         replaceTo: '{}',
-        skipIf: (base: string) => !base.includes('this.pushSchema()'),
+      },
+      {
+        target: 'this.extractHostAndApiKey()',
+        replaceTo: '["",""]',
       },
     ],
   },
@@ -38,17 +37,12 @@ export const patching = () => {
   patchMappings.forEach(({ module, patches }) => {
     const path = moduleResolve(module)
     if (!path) return
-    const original = fs.readFileSync(path, { encoding: 'utf8' })
+    let content = fs.readFileSync(path, { encoding: 'utf8' })
 
-    patches.forEach(({ skipIf, target, replaceTo }) => {
-      if (skipIf(original)) return
-
-      if (!original.includes(target))
-        throw new Error(`${generatorName}: The patch failed for ${module}`)
-
-      const patched = original.replace(target, replaceTo)
-      fs.writeFileSync(path, patched)
+    patches.forEach(({ target, replaceTo }) => {
+      content = content.replace(target, replaceTo)
     })
+    fs.writeFileSync(path, content)
 
     logger.info(`${generatorName}:Patched ${module}`)
   })
