@@ -36,7 +36,9 @@ generator sb_prisma {
   provider       = "sb-prisma"
   output         = "../sb-prisma" // (default) the directory where generated code for initialization will be saved
   endpoint       = "SUPABASE_URL" // (default) the environment variable key that pointing to the Supabase endpoint
-  apikey         = "SUPABASE_ANON_KEY" // (default) the environment variable key that pointing to the Supabase api key
+  // endpoint    = "SUPABASE_ENDPOINT" // process.env.SUPABASE_ENDPOINT is applied as endpoint 
+  apikey         = "SUPABASE_API_KEY" // (default) the environment variable key that pointing to the Supabase api key
+  // apikey      = "SUPABASE_ANON_KEY" // process.env.SUPABASE_ANON_KEY is applied as apikey 
   
   // fetchModule = "node-fetch" // if you want to specify the module name for fetch (must be exported by default)
 }

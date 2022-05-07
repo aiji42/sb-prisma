@@ -104,37 +104,20 @@ export const writeTableMapping = (
 }
 
 const ENDPOINT = 'SUPABASE_URL'
-const API_KEY = 'SUPABASE_ANON_KEY'
+const API_KEY = 'SUPABASE_API_KEY'
 
 export const writePrepareFunction = (
   file: SourceFile,
   options: GeneratorOptions,
 ) => {
-  const { endpoint, apikey } = options.generator.config
+  const { endpoint = ENDPOINT, apikey = API_KEY } = options.generator.config
   file.addStatements((writer) => {
     writer.write('prepare(')
     writer
       .inlineBlock(() => {
-        writer
-          .write('endpoint: ')
-          .write(`process.env.${ENDPOINT}`)
-          .conditionalWrite(
-            !!endpoint && endpoint !== ENDPOINT,
-            ` || process.env.${endpoint}`,
-          )
-          .write(` || "${process.env[endpoint ?? ENDPOINT] ?? ''}"`)
-          .write(',')
-        writer
-          .write('apikey: ')
-          .write(`process.env.${API_KEY}`)
-          .conditionalWrite(
-            !!apikey && apikey !== API_KEY,
-            ` || process.env.${apikey}`,
-          )
-          .write(` || "${process.env[apikey ?? API_KEY] ?? ''}"`)
-          .write(',')
-          .newLine()
-        writer.write('//@ts-ignore').newLine()
+        writer.write('endpoint: ').write(`process.env.${endpoint}`).write(',')
+        writer.write('apikey: ').write(`process.env.${apikey}`).write(',')
+        writer.writeLine('//@ts-ignore')
         writer.write('fetch').write(',')
         writer
           .write('modelMap: ')

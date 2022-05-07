@@ -2,7 +2,7 @@ generator custom_generator {
   provider    = "node ../../node_modules/@sb-prisma/generator"
   endpoint    = "SUPABASE_URL"
   apikey      = "SUPABASE_ANON_KEY"
-  fetchModule = "node-fetch"
+  fetchModule = "browser"
 }
 
 generator client {

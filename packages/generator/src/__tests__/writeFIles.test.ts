@@ -23,10 +23,6 @@ beforeEach(() => {
   process.env = {
     ...oldEnv,
     DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
-    SUPABASE_URL: 'this is SUPABASE_URL',
-    SUPABASE_ANON_KEY: 'this is SUPABASE_ANON_KEY',
-    SUPABASE_URL_CUSTOM: 'this is SUPABASE_URL_CUSTOM',
-    SUPABASE_ANON_KEY_CUSTOM: 'this is SUPABASE_ANON_KEY_CUSTOM',
   }
 })
 
@@ -85,11 +81,7 @@ test('writeTableMapping', async () => {
   expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writePrepareFunction; with no environments', async () => {
-  process.env = {
-    ...oldEnv,
-    DATABASE_URL: 'postgresql://postgres:postgres@localhost:54322/postgres',
-  }
+test('writePrepareFunction; not specify keys', async () => {
   const options = {
     generator: await getSampleGenerator('generator_minimum'),
   } as GeneratorOptions
@@ -97,15 +89,7 @@ test('writePrepareFunction; with no environments', async () => {
   expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writePrepareFunction; with environments', async () => {
-  const options = {
-    generator: await getSampleGenerator('generator_minimum'),
-  } as GeneratorOptions
-  writePrepareFunction(file, options)
-  expect(file.getFullText()).toMatchSnapshot()
-})
-
-test('writePrepareFunction; with environments and specify keys', async () => {
+test('writePrepareFunction; specify keys', async () => {
   const options = {
     generator: await getSampleGenerator('generator_with_sb_envs'),
   } as GeneratorOptions
