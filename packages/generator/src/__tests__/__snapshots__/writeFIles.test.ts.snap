@@ -77,9 +77,9 @@ exports[`writeOperationMapping 1`] = `
 "
 `;
 
-exports[`writePrepareFunction; with environments 1`] = `
+exports[`writePrepareFunction; not specify keys 1`] = `
 "prepare({
-    endpoint: process.env.SUPABASE_URL || \\"this is SUPABASE_URL\\",apikey: process.env.SUPABASE_ANON_KEY || \\"this is SUPABASE_ANON_KEY\\",
+    endpoint: process.env.SUPABASE_URL,apikey: process.env.SUPABASE_API_KEY,
     //@ts-ignore
     fetch,modelMap: {
         operationMapping,relationMapping,tableMapping,
@@ -88,20 +88,9 @@ exports[`writePrepareFunction; with environments 1`] = `
 "
 `;
 
-exports[`writePrepareFunction; with environments and specify keys 1`] = `
+exports[`writePrepareFunction; specify keys 1`] = `
 "prepare({
-    endpoint: process.env.SUPABASE_URL || process.env.SUPABASE_URL_CUSTOM || \\"this is SUPABASE_URL_CUSTOM\\",apikey: process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY_CUSTOM || \\"this is SUPABASE_ANON_KEY_CUSTOM\\",
-    //@ts-ignore
-    fetch,modelMap: {
-        operationMapping,relationMapping,tableMapping,
-    },
-})
-"
-`;
-
-exports[`writePrepareFunction; with no environments 1`] = `
-"prepare({
-    endpoint: process.env.SUPABASE_URL || \\"\\",apikey: process.env.SUPABASE_ANON_KEY || \\"\\",
+    endpoint: process.env.SUPABASE_URL_CUSTOM,apikey: process.env.SUPABASE_API_KEY_CUSTOM,
     //@ts-ignore
     fetch,modelMap: {
         operationMapping,relationMapping,tableMapping,
