@@ -1,5 +1,5 @@
 generator custom_generator {
-  provider    = "sb-prisma"
+  provider    = "node ../../node_modules/@sb-prisma/generator"
   endpoint    = "SUPABASE_URL"
   apikey      = "SUPABASE_ANON_KEY"
   fetchModule = "node-fetch"

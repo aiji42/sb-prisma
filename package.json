@@ -20,6 +20,7 @@
     "dev": "lerna run --parallel dev",
     "test": "lerna run --parallel test",
     "build": "lerna run build",
+    "postinstall": "yarn build && yarn workspace usage generate",
     "semantic-release": "multi-semantic-release --ignore-private-packages"
   }
 }

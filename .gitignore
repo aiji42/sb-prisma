@@ -3,7 +3,7 @@ node_modules
 yarn-error.log
 build
 pnpm-debug.log
-.env*
+.env
 # Supabase
 **/supabase/.branches
 **/supabase/.temp
