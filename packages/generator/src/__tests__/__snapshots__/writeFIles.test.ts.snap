@@ -1,18 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`writeImports; with fetchModule (browser) 1`] = `
+exports[`writeImportsAndExports; with fetchModule (browser) 1`] = `
 "import { prepare } from \\"@sb-prisma/client\\";
+
+export { createClient, sb } from \\"@sb-prisma/client\\";
 "
 `;
 
-exports[`writeImports; with fetchModule (node-fetch) 1`] = `
+exports[`writeImportsAndExports; with fetchModule (node-fetch) 1`] = `
 "import fetch from \\"node-fetch\\";
 import { prepare } from \\"@sb-prisma/client\\";
+
+export { createClient, sb } from \\"@sb-prisma/client\\";
 "
 `;
 
-exports[`writeImports; with no fetchModule 1`] = `
+exports[`writeImportsAndExports; with no fetchModule 1`] = `
 "import { prepare } from \\"@sb-prisma/client\\";
+
+export { createClient, sb } from \\"@sb-prisma/client\\";
 "
 `;
 

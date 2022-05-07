@@ -2,7 +2,7 @@ import { generatorHandler } from '@prisma/generator-helper'
 import { logger } from '@prisma/sdk'
 import { Project } from 'ts-morph'
 import {
-  writeImports,
+  writeImportsAndExports,
   writeOperationMapping,
   writePrepareFunction,
   writeRelationMapping,
@@ -32,7 +32,7 @@ generatorHandler({
       { overwrite: true },
     )
 
-    writeImports(indexFile, options)
+    writeImportsAndExports(indexFile, options)
     writeOperationMapping(indexFile, options)
     writeRelationMapping(indexFile, options)
     writeTableMapping(indexFile, options)

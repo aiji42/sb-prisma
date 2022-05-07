@@ -1,6 +1,6 @@
 import { Project, SourceFile } from 'ts-morph'
 import {
-  writeImports,
+  writeImportsAndExports,
   writeOperationMapping,
   writePrepareFunction,
   writeRelationMapping,
@@ -34,27 +34,27 @@ afterEach(() => {
   process.env = { ...oldEnv }
 })
 
-test('writeImports; with no fetchModule', async () => {
+test('writeImportsAndExports; with no fetchModule', async () => {
   const options = {
     generator: await getSampleGenerator('generator_minimum'),
   } as GeneratorOptions
-  writeImports(file, options)
+  writeImportsAndExports(file, options)
   expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writeImports; with fetchModule (browser)', async () => {
+test('writeImportsAndExports; with fetchModule (browser)', async () => {
   const options = {
     generator: await getSampleGenerator('generator_with_browser_fetch'),
   } as GeneratorOptions
-  writeImports(file, options)
+  writeImportsAndExports(file, options)
   expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writeImports; with fetchModule (node-fetch)', async () => {
+test('writeImportsAndExports; with fetchModule (node-fetch)', async () => {
   const options = {
     generator: await getSampleGenerator('generator_with_node_fetch'),
   } as GeneratorOptions
-  writeImports(file, options)
+  writeImportsAndExports(file, options)
   expect(file.getFullText()).toMatchSnapshot()
 })
 
