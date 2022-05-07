@@ -14,11 +14,19 @@ export const prepare = ({
   fetch,
   modelMap,
 }: {
-  endpoint: string
-  apikey: string
+  endpoint?: string
+  apikey?: string
   fetch: Fetch
   modelMap: ModelMapping
 }) => {
+  if (!endpoint)
+    throw new Error(
+      '@sb-prisma/client Error: `endpoint` is unset or invalid. Please check the documentation. https://github.com/aiji42/sb-prisma#install--setup',
+    )
+  if (!apikey)
+    throw new Error(
+      '@sb-prisma/client Error: `apikey` is unset or invalid. Please check the documentation. https://github.com/aiji42/sb-prisma#install--setup',
+    )
   _endpoint = endpoint
   _apikey = apikey
   _fetch = fetch
