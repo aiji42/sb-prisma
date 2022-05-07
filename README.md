@@ -6,7 +6,7 @@
 # sb-prisma
 
 <p align="center">
-  <img src="https://github.com/aiji42/sb-prisma/blob/main/hero.png" width="450" />
+  <img src="https://github.com/aiji42/sb-prisma/blob/main/hero.png?raw=true" width="450" />
 </p>
 
 🔧 This project is experimental and not yet stable, so please use with caution. We look forward to your contributions.
