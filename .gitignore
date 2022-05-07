@@ -7,3 +7,6 @@ pnpm-debug.log
 # Supabase
 **/supabase/.branches
 **/supabase/.temp
+
+# test coverage
+coverage

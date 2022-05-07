@@ -19,6 +19,7 @@
     "prepare": "husky install",
     "dev": "lerna run --parallel dev",
     "test": "lerna run --parallel test",
+    "coverage": "lerna run --parallel coverage",
     "build": "lerna run build",
     "postinstall": "yarn build && yarn workspace usage generate",
     "semantic-release": "multi-semantic-release --ignore-private-packages"
