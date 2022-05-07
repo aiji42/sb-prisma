@@ -179,7 +179,6 @@ The available Prisma Client APIs are Those that are not yet supported will be su
 
 <details><summary>Not yet supported</summary>
 
-
 - [ ] set
 - [ ] push
 - [ ] unset
@@ -190,39 +189,12 @@ The available Prisma Client APIs are Those that are not yet supported will be su
 
 <details><summary>Not yet supported</summary>
 
-
 - [ ] has
 - [ ] hasEvery
 - [ ] hasSome
 - [ ] isEmpty
 - [ ] isSet
 - [ ] equals
-
-</details>
-
-#### [Composite type methods](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#composite-type-methods)
-
-<details><summary>Not yet supported</summary>
-
-- [ ] set
-- [ ] unset
-- [ ] update
-- [ ] upsert
-- [ ] push
-
-</details>
-
-#### [Composite type filters](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#composite-type-filters)
-
-<details><summary>Not yet supported</summary>
-
-- [ ] equals
-- [ ] is
-- [ ] isNot
-- [ ] isEmpty
-- [ ] every
-- [ ] some
-- [ ] none
 
 </details>
 
