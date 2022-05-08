@@ -24,11 +24,10 @@ datasource db {
 }
 
 model User {
-  id     String     @id @default(uuid())
-  email  String     @unique
+  id     Int     @id @default(autoincrement())
+  email  String  @unique
   name   String?
   teamId Int?
-  updatedAt DateTime  @default(now()) @updatedAt
 
   Team   Team? @relation(fields: [teamId], references: [id])
 }

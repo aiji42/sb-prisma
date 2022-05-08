@@ -3,9 +3,10 @@ import { logger } from '@prisma/sdk'
 import { Project } from 'ts-morph'
 import {
   writeImportsAndExports,
-  writeModels,
   writeOperationMapping,
   writePrepareFunction,
+  writeRelationMapping,
+  writeTableMapping,
 } from './utils/writeFiles'
 import { formatFile } from './utils/formatFile'
 import { patching } from './utils/patching'
@@ -33,7 +34,8 @@ generatorHandler({
 
     writeImportsAndExports(indexFile, options)
     writeOperationMapping(indexFile, options)
-    writeModels(indexFile, options)
+    writeRelationMapping(indexFile, options)
+    writeTableMapping(indexFile, options)
     writePrepareFunction(indexFile, options)
 
     indexFile.formatText({

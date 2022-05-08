@@ -1,16 +1,16 @@
 import { Project, SourceFile } from 'ts-morph'
 import {
   writeImportsAndExports,
-  writeModels,
   writeOperationMapping,
   writePrepareFunction,
+  writeRelationMapping,
+  writeTableMapping,
 } from '../utils/writeFiles'
 import { GeneratorOptions } from '@prisma/generator-helper'
 import {
   getSampleGenerator,
   getSampleDMMF,
 } from './__fixtures__/getSampleSchema'
-import * as prettier from 'prettier'
 
 let file: SourceFile
 
@@ -60,20 +60,25 @@ test('writeOperationMapping', async () => {
   } as GeneratorOptions
 
   writeOperationMapping(file, options)
-  expect(
-    prettier.format(file.getFullText(), { parser: 'typescript' }),
-  ).toMatchSnapshot()
+  expect(file.getFullText()).toMatchSnapshot()
 })
 
-test('writeModels', async () => {
+test('writeRelationMapping', async () => {
   const options = {
     dmmf: await getSampleDMMF(),
   } as GeneratorOptions
 
-  writeModels(file, options)
-  expect(
-    prettier.format(file.getFullText(), { parser: 'typescript' }),
-  ).toMatchSnapshot()
+  writeRelationMapping(file, options)
+  expect(file.getFullText()).toMatchSnapshot()
+})
+
+test('writeTableMapping', async () => {
+  const options = {
+    dmmf: await getSampleDMMF(),
+  } as GeneratorOptions
+
+  writeTableMapping(file, options)
+  expect(file.getFullText()).toMatchSnapshot()
 })
 
 test('writePrepareFunction; not specify keys', async () => {
