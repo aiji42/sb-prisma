@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "3.13.0",
-    "@sb-prisma/client": "1.0.4",
+    "@sb-prisma/client": "1.1.0",
     "hono": "^1.1.1"
   },
   "devDependencies": {
