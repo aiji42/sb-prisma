@@ -23,7 +23,7 @@ export const makeFetcher = (
     const where = makeWhere(args)
 
     const url = new URL(endpoint)
-    url.pathname = `/rest/v1/${modelMap.tableMapping[model] ?? model}`
+    url.pathname = `/rest/v1/${modelMap.models[model]?.dbName ?? model}`
     url.searchParams.append('select', select)
     where && url.searchParams.append('and', `(${where})`)
     orderBy && url.searchParams.append('order', orderBy)
