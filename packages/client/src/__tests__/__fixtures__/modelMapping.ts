@@ -115,7 +115,7 @@ export const models: Models = {
         hasDefaultValue: true,
         default: { name: 'now', args: [] },
         isGenerated: false,
-        isUpdatedAt: true,
+        isUpdatedAt: false,
       },
       Team: {
         name: 'Team',

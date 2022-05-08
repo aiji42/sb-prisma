@@ -75,9 +75,15 @@ const deleteMany =
 const updateOne =
   (fetcher: Fetcher) =>
   async (args: Args, model: string, modelMapping: ModelMapping) => {
-    const res = await fetcher(args, 'PATCH', model, modelMapping, {
-      Prefer: 'return=representation',
-    })
+    const res = await fetcher(
+      { ...args, data: autoUpdatedAt(model, args.data, modelMapping) },
+      'PATCH',
+      model,
+      modelMapping,
+      {
+        Prefer: 'return=representation',
+      },
+    )
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
     const data = await res.json()
     throw new SupabaseResponse({ data: singly(data) })
@@ -86,9 +92,15 @@ const updateOne =
 const updateMany =
   (fetcher: Fetcher) =>
   async (args: Args, model: string, modelMapping: ModelMapping) => {
-    const res = await fetcher(args, 'PATCH', model, modelMapping, {
-      Prefer: 'return=representation',
-    })
+    const res = await fetcher(
+      { ...args, data: autoUpdatedAt(model, args.data, modelMapping) },
+      'PATCH',
+      model,
+      modelMapping,
+      {
+        Prefer: 'return=representation',
+      },
+    )
     if (!res.ok) throw new SupabaseResponse({ error: await res.json() })
     const data = await res.json()
     throw new SupabaseResponse({ data: { count: data.length } })
@@ -135,4 +147,22 @@ const getModelAndMethod = (
     )
 
   return [model, method]
+}
+
+const autoUpdatedAt = (
+  model: string,
+  data: Args['data'],
+  { models }: ModelMapping,
+) => {
+  const [column] =
+    Object.entries(models[model]?.fields ?? {}).find(
+      ([, field]) =>
+        field.isUpdatedAt &&
+        typeof field.default === 'object' &&
+        field.default.name === 'now',
+    ) ?? []
+  if (!column || !data) return data
+  if (Array.isArray(data))
+    return data.map((d) => ({ [column]: new Date(), ...d }))
+  return { [column]: new Date(), ...data }
 }

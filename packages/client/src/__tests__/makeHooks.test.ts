@@ -129,6 +129,33 @@ test('make hooks; update', async () => {
   expect(res.error).toBeNull()
 })
 
+test('make hooks; update - has updatedAt', async () => {
+  mockFetcher.mockReturnValue(
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([{ id: 1, name: 'foo' }]),
+    }),
+  )
+  const hooks = makeHooks(mockFetcher, modelMap)
+  const res = await hooks
+    .beforeRequest({
+      rootField: 'updateOneTeam',
+      args: { where: { id: 1 }, data: { name: 'foo' } },
+    })
+    .catch((res) => res)
+
+  expect(mockFetcher).toBeCalledWith(
+    { where: { id: 1 }, data: { name: 'foo', updatedAt: expect.any(Date) } },
+    'PATCH',
+    'Team',
+    modelMap,
+    { Prefer: 'return=representation' },
+  )
+  expect(res).toBeInstanceOf(SupabaseResponse)
+  expect(res.data).toMatchObject({ id: 1, name: 'foo' })
+  expect(res.error).toBeNull()
+})
+
 test('make hooks; updateMany', async () => {
   mockFetcher.mockReturnValue(
     Promise.resolve({
@@ -148,6 +175,33 @@ test('make hooks; updateMany', async () => {
     { data: { name: 'foo' } },
     'PATCH',
     'User',
+    modelMap,
+    { Prefer: 'return=representation' },
+  )
+  expect(res).toBeInstanceOf(SupabaseResponse)
+  expect(res.data).toMatchObject({ count: 2 })
+  expect(res.error).toBeNull()
+})
+
+test('make hooks; updateMany - has updatedAt', async () => {
+  mockFetcher.mockReturnValue(
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([{ id: 1 }, { id: 2 }]),
+    }),
+  )
+  const hooks = makeHooks(mockFetcher, modelMap)
+  const res = await hooks
+    .beforeRequest({
+      rootField: 'updateManyTeam',
+      args: { data: { name: 'foo' } },
+    })
+    .catch((res) => res)
+
+  expect(mockFetcher).toBeCalledWith(
+    { data: { name: 'foo', updatedAt: expect.any(Date) } },
+    'PATCH',
+    'Team',
     modelMap,
     { Prefer: 'return=representation' },
   )
