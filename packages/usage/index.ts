@@ -48,8 +48,9 @@ app.get('/', async (c) => {
     await sb(
       prisma().team.findMany({
         select: {
-          id: true,
-          name: false,
+          id: false,
+          name: true,
+          labels: true,
           users: {
             select: {
               Team: {
@@ -62,7 +63,10 @@ app.get('/', async (c) => {
           },
         },
         where: {
-          name: { in: ['team2', 'team3'] },
+          name: { in: ['team1', 'team2'] },
+          labels: {
+            hasSome: ['ruby', 'javascript'],
+          },
         },
       }),
     ),
@@ -138,7 +142,11 @@ const prepare = async () => {
   await cleanUp()
   await sb(
     prisma().team.createMany({
-      data: [{ name: 'team1' }, { name: 'team2' }, { name: 'team3' }],
+      data: [
+        { name: 'team1', labels: ['python', 'ruby'] },
+        { name: 'team2', labels: ['typescript', 'javascript'] },
+        { name: 'team3', labels: [] },
+      ],
     }),
   )
   const teams = await sb(prisma().team.findMany())
