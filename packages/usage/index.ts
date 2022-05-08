@@ -53,12 +53,19 @@ app.get('/', async (c) => {
           labels: true,
           users: {
             select: {
+              name: true,
               Team: {
                 select: {
                   id: true,
                   name: true,
                 },
               },
+            },
+            where: {
+              OR: [
+                { name: { startsWith: 'f', mode: 'insensitive' } },
+                { name: { endsWith: 'z', mode: 'insensitive' } },
+              ],
             },
           },
         },
