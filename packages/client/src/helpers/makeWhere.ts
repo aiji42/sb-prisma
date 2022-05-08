@@ -1,18 +1,31 @@
-import { Args, NegativeOperators, Operators, Scalar, Where } from '../types'
+import {
+  Args,
+  ModelMapping,
+  NegativeOperators,
+  Operators,
+  Scalar,
+  Where,
+} from '../types'
 
 // TODO: related table
-export const makeWhere = (arg: Args) => {
+export const makeWhere = (
+  arg: Args,
+  model: string,
+  { models }: Pick<ModelMapping, 'models'>,
+) => {
   if (!arg.where) return ''
   const { AND, OR, NOT, ...rest } = arg.where
   let where = []
-  if (AND) where.push(_AND(AND))
-  if (OR) where.push(_OR(OR))
-  if (NOT) where.push(_NOT(NOT))
+  if (AND) where.push(_AND(AND, model, { models }))
+  if (OR) where.push(_OR(OR, model, { models }))
+  if (NOT) where.push(_NOT(NOT, model, { models }))
   const restStatement = Object.entries(rest)
     .flatMap(([col, cond]) => {
       const s = []
-      if (cond === null || typeof cond !== 'object') return _equals(col, cond)
-      if (cond.equals !== undefined) s.push(_equals(col, cond.equals))
+      if (cond === null || typeof cond !== 'object')
+        return _equals(col, cond, false)
+      if (cond.equals !== undefined)
+        s.push(_equals(col, cond.equals, isListColumn(col, model, { models })))
       if (cond.in !== undefined) s.push(_in(col, cond.in))
       if (cond.notIn !== undefined) s.push(_notIn(col, cond.notIn))
       if (cond.lt !== undefined) s.push(_lt(col, cond.lt))
@@ -25,6 +38,10 @@ export const makeWhere = (arg: Args) => {
         s.push(_startsWith(col, cond.startsWith, cond.mode))
       if (cond.endsWith !== undefined)
         s.push(_endsWith(col, cond.endsWith, cond.mode))
+      if (cond.has !== undefined) s.push(_has(col, cond.has))
+      if (cond.hasEvery !== undefined) s.push(_hasEvery(col, cond.hasEvery))
+      if (cond.hasSome !== undefined) s.push(_hasSome(col, cond.hasSome))
+      if (cond.isEmpty !== undefined) s.push(_isEmpty(col, cond.isEmpty))
       if (cond.not !== undefined) s.push(_not(col, cond.not, cond.mode))
       return s
     })
@@ -33,22 +50,45 @@ export const makeWhere = (arg: Args) => {
   return where.join(',')
 }
 
-const _AND = (condition: Where[] | Where): string => {
+const _AND = (
+  condition: Where[] | Where,
+  model: string,
+  { models }: Pick<ModelMapping, 'models'>,
+): string => {
   const cond = Array.isArray(condition) ? condition : [condition]
-  return `and(${cond.map((where) => makeWhere({ where })).join(',')})`
+  return `and(${cond
+    .map((where) => makeWhere({ where }, model, { models }))
+    .join(',')})`
 }
 
-const _OR = (condition: Where[] | Where): string => {
+const _OR = (
+  condition: Where[] | Where,
+  model: string,
+  { models }: Pick<ModelMapping, 'models'>,
+): string => {
   const cond = Array.isArray(condition) ? condition : [condition]
-  return `or(${cond.map((where) => makeWhere({ where })).join(',')})`
+  return `or(${cond
+    .map((where) => makeWhere({ where }, model, { models }))
+    .join(',')})`
 }
 
-const _NOT = (condition: Where[] | Where): string => {
+const _NOT = (
+  condition: Where[] | Where,
+  model: string,
+  { models }: Pick<ModelMapping, 'models'>,
+): string => {
   const cond = Array.isArray(condition) ? condition : [condition]
-  return `not.and(${cond.map((where) => makeWhere({ where })).join(',')})`
+  return `not.and(${cond
+    .map((where) => makeWhere({ where }, model, { models }))
+    .join(',')})`
 }
 
-const _equals = (col: string, condition: Required<Operators['equals']>) => {
+const _equals = (
+  col: string,
+  condition: Required<Operators['equals']>,
+  forList: boolean,
+) => {
+  if (forList) return _equalsList(col, condition)
   if (typeof condition === 'boolean' || condition === null)
     return `${col}.is.${condition}`
   return `${col}.eq.${condition}`
@@ -100,7 +140,6 @@ const _notGte = (col: string, condition: Required<Operators['gte']>) => {
   return `${col}.not.gte.${condition}`
 }
 
-// TODO: Filters for list-type columns
 const _contains = (
   col: string,
   condition: Required<Operators['contains']>,
@@ -175,3 +214,31 @@ const _not = (
   if (condition.not !== undefined) s.push(_not(col, !condition.not, mode))
   return s.join(',')
 }
+
+const _has = (col: string, condition: Required<Operators['has']>) =>
+  _hasEvery(col, condition)
+
+const _hasEvery = (col: string, condition: Required<Operators['hasEvery']>) => {
+  const cond = Array.isArray(condition) ? condition : [condition]
+  return `${col}.cs.{${JSON.stringify(cond).replace(/^\[|]$/g, '')}}`
+}
+
+const _hasSome = (col: string, condition: Required<Operators['hasSome']>) => {
+  const cond = Array.isArray(condition) ? condition : [condition]
+  return `${col}.ov.{${JSON.stringify(cond).replace(/^\[|]$/g, '')}}`
+}
+
+const _isEmpty = (col: string, condition: Required<Operators['isEmpty']>) => {
+  return condition ? `${col}.eq.{}` : `${col}.neq.{}`
+}
+
+const _equalsList = (col: string, condition: Required<Operators['equals']>) => {
+  const cond = Array.isArray(condition) ? condition : [condition]
+  return `${col}.eq.{${JSON.stringify(cond).replace(/^\[|]$/g, '')}}`
+}
+
+const isListColumn = (
+  column: string,
+  model: string,
+  { models }: Pick<ModelMapping, 'models'>,
+) => models[model]?.fields[column]?.isList ?? false

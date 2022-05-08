@@ -29,6 +29,7 @@ model User {
 model Team {
   id        String   @id @default(uuid())
   name      String
+  labels    String[]
   users     User[]
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
