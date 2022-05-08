@@ -1,7 +1,7 @@
 {
   "name": "@sb-prisma/client",
   "description": "This is a project to make the supabase REST API available from PrismaClient.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "dist/index.js",
   "license": "MIT",
   "engines": {
