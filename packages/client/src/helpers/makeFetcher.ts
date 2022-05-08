@@ -20,7 +20,7 @@ export const makeFetcher = (
   return (args, method, model, modelMap, headers) => {
     const select = makeSelect(args, model, modelMap)
     const orderBy = makeOrder(args)
-    const where = makeWhere(args)
+    const where = makeWhere(args, model, modelMap)
 
     const url = new URL(endpoint)
     url.pathname = `/rest/v1/${modelMap.models[model]?.dbName ?? model}`
