@@ -153,7 +153,7 @@ export const models: Models = {
         isReadOnly: false,
         type: 'String',
         hasDefaultValue: true,
-        default: { name: 'cuid', args: [] },
+        default: { name: 'uuid', args: [] },
         isGenerated: false,
         isUpdatedAt: false,
       },
