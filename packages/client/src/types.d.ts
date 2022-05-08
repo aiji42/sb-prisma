@@ -1,7 +1,9 @@
+import { DMMF } from '@prisma/generator-helper'
+
 export type Scalar = number | string | boolean | null
 
 export type Operators = {
-  equals?: Scalar
+  equals?: Scalar | Scalar[]
   in?: Scalar[]
   notIn?: Scalar[]
   lt?: number
@@ -12,6 +14,11 @@ export type Operators = {
   mode?: 'default' | 'insensitive'
   startsWith?: string
   endsWith?: string
+
+  has?: Scalar
+  hasEvery?: Scalar | Scalar[]
+  hasSome?: Scalar | Scalar[]
+  isEmpty?: boolean
 }
 
 export type NegativeOperators = {
@@ -38,8 +45,16 @@ export type Args = {
   skipDuplicates?: boolean
 }
 
+export type Models = Record<
+  string,
+  Omit<DMMF.Model, 'fields'> & {
+    fields: {
+      [name: string]: DMMF.Field
+    }
+  }
+>
+
 export type ModelMapping = {
   operationMapping: Record<string, { model: string; method: string }>
-  relationMapping: Record<string, Record<string, string>>
-  tableMapping: Record<string, string>
+  models: Models
 }

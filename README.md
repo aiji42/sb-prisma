@@ -190,16 +190,12 @@ The available Prisma Client APIs are Those that are not yet supported will be su
 
 #### [Scalar list filters](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#scalar-list-filters)
 
-<details><summary>Not yet supported</summary>
+- [x] has
+- [x] hasEvery
+- [x] hasSome
+- [x] isEmpty
+- [x] equals
 
-- [ ] has
-- [ ] hasEvery
-- [ ] hasSome
-- [ ] isEmpty
-- [ ] isSet
-- [ ] equals
-
-</details>
 
 #### [Atomic number operations](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#atomic-number-operations)
 

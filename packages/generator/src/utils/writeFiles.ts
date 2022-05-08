@@ -1,5 +1,5 @@
 import { SourceFile, VariableDeclarationKind } from 'ts-morph'
-import { GeneratorOptions } from '@prisma/generator-helper'
+import { DMMF, GeneratorOptions } from '@prisma/generator-helper'
 
 export const writeImportsAndExports = (
   file: SourceFile,
@@ -51,52 +51,31 @@ export const writeOperationMapping = (
   })
 }
 
-export const writeRelationMapping = (
-  file: SourceFile,
-  options: GeneratorOptions,
-) => {
-  file.addVariableStatement({
-    declarationKind: VariableDeclarationKind.Const,
-    declarations: [
-      {
-        name: 'relationMapping',
-        initializer: (writer) => {
-          writer.block(() => {
-            options.dmmf.datamodel.models.forEach(({ name, fields }) => {
-              writer.write(`${name}: `)
-              writer.inlineBlock(() => {
-                fields.forEach(({ kind, name, type }) => {
-                  if (kind === 'object')
-                    writer.write(`${name}: "${type}"`).write(',')
-                })
-              })
-              writer.write(',')
-            })
-          })
+export const writeModels = (file: SourceFile, options: GeneratorOptions) => {
+  const models = Object.fromEntries(
+    options.dmmf.datamodel.models.map(({ fields, ...model }) => {
+      model.fields = Object.fromEntries<Record<string, DMMF.Field>>(
+        fields.map((field) => [field.name, field]),
+      )
+      return [
+        model.name,
+        {
+          ...model,
+          fields: Object.fromEntries(
+            fields.map((field) => [field.name, field]),
+          ),
         },
-      },
-    ],
-  })
-}
+      ]
+    }),
+  )
 
-export const writeTableMapping = (
-  file: SourceFile,
-  options: GeneratorOptions,
-) => {
   file.addVariableStatement({
     declarationKind: VariableDeclarationKind.Const,
     declarations: [
       {
-        name: 'tableMapping',
+        name: 'models',
         initializer: (writer) => {
-          writer.block(() => {
-            options.dmmf.datamodel.models.forEach(({ name, dbName }) => {
-              writer
-                .write(`${name}: `)
-                .quote(dbName ?? name)
-                .write(',')
-            })
-          })
+          writer.write(JSON.stringify(models))
         },
       },
     ],
@@ -123,8 +102,7 @@ export const writePrepareFunction = (
           .write('modelMap: ')
           .inlineBlock(() => {
             writer.write('operationMapping,')
-            writer.write('relationMapping,')
-            writer.write('tableMapping,')
+            writer.write('models,')
           })
           .write(',')
       })

@@ -20,10 +20,10 @@ export const makeFetcher = (
   return (args, method, model, modelMap, headers) => {
     const select = makeSelect(args, model, modelMap)
     const orderBy = makeOrder(args)
-    const where = makeWhere(args)
+    const where = makeWhere(args, model, modelMap)
 
     const url = new URL(endpoint)
-    url.pathname = `/rest/v1/${modelMap.tableMapping[model] ?? model}`
+    url.pathname = `/rest/v1/${modelMap.models[model]?.dbName ?? model}`
     url.searchParams.append('select', select)
     where && url.searchParams.append('and', `(${where})`)
     orderBy && url.searchParams.append('order', orderBy)

@@ -16,18 +16,23 @@ datasource db {
 }
 
 model User {
-  id     Int     @id @default(autoincrement())
-  email  String  @unique
-  name   String?
-  teamId Int?
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  teamId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  Team   Team? @relation(fields: [teamId], references: [id])
+  Team Team? @relation(fields: [teamId], references: [id])
 }
 
 model Team {
-  id   Int    @id @default(autoincrement())
-  name String
-  users User[]
+  id        String   @id @default(uuid())
+  name      String
+  labels    String[]
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 enum NotificationType {

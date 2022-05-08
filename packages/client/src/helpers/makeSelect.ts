@@ -3,23 +3,19 @@ import { Args, ModelMapping } from '../types'
 export const makeSelect = (
   args: Args,
   model: string,
-  modelMap: ModelMapping,
+  { models }: Pick<ModelMapping, 'models'>,
 ): string => {
   if (!args.select) return '*'
   return Object.entries(args.select)
     .filter(([, v]) => v)
-    .map(([k, v]) => {
-      const relatedModel = modelMap.relationMapping[model]?.[k]
-      if (!relatedModel) return k
+    .map(([alias, v]) => {
+      const rm = models[model]?.fields?.[alias]
+      if (rm?.kind !== 'object') return alias
 
-      const alias = `${k}:${
-        modelMap.tableMapping[relatedModel] ?? relatedModel
-      }`
-      return `${alias}(${makeSelect(
-        typeof v === 'object' ? v : {},
-        relatedModel,
-        modelMap,
-      )})`
+      const search = `${alias}:${models[rm.type]?.dbName ?? rm.type}`
+      return `${search}(${makeSelect(typeof v === 'object' ? v : {}, rm.type, {
+        models,
+      })})`
     })
     .join(',')
 }
