@@ -1,4 +1,10 @@
-import { Args, ModelMapping } from '../types'
+import {
+  Args,
+  ArgsFlatten,
+  ModelMapping,
+  Select,
+  SelectFlatten,
+} from '../types'
 import { makeSelect } from './makeSelect'
 import { makeOrder } from './makeOrder'
 import { makeWhere } from './makeWhere'
@@ -18,17 +24,33 @@ export const makeFetcher = (
   fetch: Fetch,
 ): Fetcher => {
   return (args, method, model, modelMap, headers) => {
-    const select = makeSelect(args, model, modelMap)
-    const orderBy = makeOrder(args)
-    const where = makeWhere(args, model, modelMap)
-
     const url = new URL(endpoint)
     url.pathname = `/rest/v1/${modelMap.models[model]?.dbName ?? model}`
-    url.searchParams.append('select', select)
-    where && url.searchParams.append('and', `(${where})`)
-    orderBy && url.searchParams.append('order', orderBy)
-    args.take && url.searchParams.append('limit', args.take.toString())
-    args.skip && url.searchParams.append('offset', args.skip.toString())
+    url.searchParams.append('select', makeSelect(args, model, modelMap))
+
+    flatArgs(args, model, modelMap, true).forEach(
+      ({ prefix, take, skip, ...rest }) => {
+        const orderBy = makeOrder(rest)
+        const where = makeWhere(rest, model, modelMap)
+        where &&
+          url.searchParams.append(
+            prefix ? `${prefix}.and` : 'and',
+            `(${where})`,
+          )
+        orderBy &&
+          url.searchParams.append(prefix ? `${prefix}.order` : 'order', orderBy)
+        take &&
+          url.searchParams.append(
+            prefix ? `${prefix}.limit` : 'limit',
+            take.toString(),
+          )
+        skip &&
+          url.searchParams.append(
+            prefix ? `${prefix}.offset` : 'offset',
+            skip.toString(),
+          )
+      },
+    )
 
     return fetch(url.toString(), {
       method,
@@ -44,4 +66,43 @@ export const makeFetcher = (
         }),
     })
   }
+}
+
+const flatArgs = (
+  args: Args,
+  model: string,
+  { models }: Pick<ModelMapping, 'models'>,
+  root: boolean,
+  parent?: string,
+): ArgsFlatten[] => {
+  const { select = {}, data, skipDuplicates, ...rest } = args
+  const [rootSelects, children] = Object.entries(select).reduce<
+    [SelectFlatten, Select]
+  >(
+    (res, [column, fields]) => {
+      const [root, children] = res
+      if (models[model]?.fields[column]?.kind !== 'object')
+        return [{ ...root, [column]: fields as boolean }, children]
+      return [root, { ...children, [column]: fields }]
+    },
+    [{}, {}],
+  )
+
+  const tableName = models[model]?.dbName ?? model
+  return [
+    {
+      select: rootSelects,
+      ...rest,
+      prefix: root ? '' : !parent ? tableName : `${parent}.${tableName}`,
+    },
+    ...Object.entries(children).flatMap(([modelName, child]) =>
+      flatArgs(
+        typeof child === 'boolean' ? {} : child,
+        modelName,
+        { models },
+        false,
+        parent,
+      ),
+    ),
+  ]
 }

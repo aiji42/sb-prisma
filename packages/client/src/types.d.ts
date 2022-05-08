@@ -26,16 +26,19 @@ export type NegativeOperators = {
 }
 
 type Select = Record<string, boolean | Args>
+type SelectFlatten = Record<string, boolean>
 
 export type Where = {
   [field: string]: (Operators & NegativeOperators) | Scalar
 }
 
+type OrderBy = Record<string, 'asc' | 'desc'> | Record<string, 'asc' | 'desc'>[]
+
 export type Args = {
   select?: Select
   take?: number
   skip?: number
-  orderBy?: Record<string, 'asc' | 'desc'> | Record<string, 'asc' | 'desc'>[]
+  orderBy?: OrderBy
   where?: Where & {
     AND?: Where[] | Where
     OR?: Where[] | Where
@@ -43,6 +46,19 @@ export type Args = {
   }
   data?: Record<string, unknown> | Record<string, unknown>[]
   skipDuplicates?: boolean
+}
+
+export type ArgsFlatten = {
+  select?: SelectFlatten
+  take?: number
+  skip?: number
+  orderBy?: OrderBy
+  where?: Where & {
+    AND?: Where[] | Where
+    OR?: Where[] | Where
+    NOT?: Where[] | Where
+  }
+  prefix: string
 }
 
 export type Models = Record<
