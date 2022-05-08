@@ -83,7 +83,14 @@ app.get('/', async (c) => {
     console.dir(
       await sb(
         prisma().user.createMany({
-          data: [user],
+          data: [
+            {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              teamId: user.teamId,
+            },
+          ],
           skipDuplicates: true,
         }),
       ),
