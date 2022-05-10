@@ -13,5 +13,12 @@ module.exports = {
           'chore(release): set `package.json` to ${nextRelease.version} [skip ci]',
       },
     ],
+    [
+      '@semantic-release/exec',
+      {
+        prepare:
+          'cp README.md packages/client/README.md && cp README.md packages/generator/README.md',
+      },
+    ],
   ],
 }
