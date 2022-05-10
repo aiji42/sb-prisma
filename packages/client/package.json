@@ -1,7 +1,7 @@
 {
   "name": "@sb-prisma/client",
   "description": "This is a project to make the supabase REST API available from PrismaClient.",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "main": "dist/index.js",
   "license": "MIT",
   "engines": {
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "^3.13.0",
-    "@sb-prisma/generator": "1.2.0",
+    "@sb-prisma/generator": "2.0.0",
     "cross-fetch": "^3.1.5",
     "uuid": "^8.3.2"
   },
