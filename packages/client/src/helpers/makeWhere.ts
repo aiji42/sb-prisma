@@ -1,42 +1,48 @@
 import { Args, NegativeOperators, Operators, Scalar, Where } from '../types'
 import { DataModel } from '../libs/DataModel'
 
-export const makeWhere = (arg: Args, model: string, doc: DataModel) => {
+export const makeWhere = (
+  arg: Args,
+  model: string,
+  doc: DataModel,
+  option?: { wrapWithAmp?: boolean },
+) => {
   if (!arg.where) return ''
   const { AND, OR, NOT, ...rest } = arg.where
   let where = []
   if (AND) where.push(_AND(AND, model, doc))
   if (OR) where.push(_OR(OR, model, doc))
   if (NOT) where.push(_NOT(NOT, model, doc))
-  const restStatement = Object.entries(rest)
-    .flatMap(([col, cond]) => {
-      const s = []
-      if (cond === null || typeof cond !== 'object')
-        return _equals(col, cond, false)
-      if (cond.equals !== undefined)
-        s.push(_equals(col, cond.equals, doc.model(model).field(col).isList))
-      if (cond.in !== undefined) s.push(_in(col, cond.in))
-      if (cond.notIn !== undefined) s.push(_notIn(col, cond.notIn))
-      if (cond.lt !== undefined) s.push(_lt(col, cond.lt))
-      if (cond.lte !== undefined) s.push(_lte(col, cond.lte))
-      if (cond.gt !== undefined) s.push(_gt(col, cond.gt))
-      if (cond.gte !== undefined) s.push(_gte(col, cond.gte))
-      if (cond.contains !== undefined)
-        s.push(_contains(col, cond.contains, cond.mode))
-      if (cond.startsWith !== undefined)
-        s.push(_startsWith(col, cond.startsWith, cond.mode))
-      if (cond.endsWith !== undefined)
-        s.push(_endsWith(col, cond.endsWith, cond.mode))
-      if (cond.has !== undefined) s.push(_has(col, cond.has))
-      if (cond.hasEvery !== undefined) s.push(_hasEvery(col, cond.hasEvery))
-      if (cond.hasSome !== undefined) s.push(_hasSome(col, cond.hasSome))
-      if (cond.isEmpty !== undefined) s.push(_isEmpty(col, cond.isEmpty))
-      if (cond.not !== undefined) s.push(_not(col, cond.not, cond.mode))
-      return s
-    })
-    .join(',')
-  if (restStatement) where.push(restStatement)
-  return where.filter((w) => w.length > 0).join(',')
+  const restStatement = Object.entries(rest).flatMap(([col, cond]) => {
+    const s = []
+    if (cond === null || typeof cond !== 'object')
+      return _equals(col, cond, false)
+    if (cond.equals !== undefined)
+      s.push(_equals(col, cond.equals, doc.model(model).field(col).isList))
+    if (cond.in !== undefined) s.push(_in(col, cond.in))
+    if (cond.notIn !== undefined) s.push(_notIn(col, cond.notIn))
+    if (cond.lt !== undefined) s.push(_lt(col, cond.lt))
+    if (cond.lte !== undefined) s.push(_lte(col, cond.lte))
+    if (cond.gt !== undefined) s.push(_gt(col, cond.gt))
+    if (cond.gte !== undefined) s.push(_gte(col, cond.gte))
+    if (cond.contains !== undefined)
+      s.push(_contains(col, cond.contains, cond.mode))
+    if (cond.startsWith !== undefined)
+      s.push(_startsWith(col, cond.startsWith, cond.mode))
+    if (cond.endsWith !== undefined)
+      s.push(_endsWith(col, cond.endsWith, cond.mode))
+    if (cond.has !== undefined) s.push(_has(col, cond.has))
+    if (cond.hasEvery !== undefined) s.push(_hasEvery(col, cond.hasEvery))
+    if (cond.hasSome !== undefined) s.push(_hasSome(col, cond.hasSome))
+    if (cond.isEmpty !== undefined) s.push(_isEmpty(col, cond.isEmpty))
+    if (cond.not !== undefined) s.push(_not(col, cond.not, cond.mode))
+    return s
+  })
+  if (restStatement) where = [...where, ...restStatement]
+  const finals = where.filter((w) => w.length > 0)
+  return finals.length > 1 && option?.wrapWithAmp
+    ? `and(${finals.join(',')})`
+    : finals.join(',')
 }
 
 const _AND = (
@@ -59,7 +65,7 @@ const _OR = (
   const conds = Array.isArray(condition) ? condition : [condition]
   if (conds.length < 1) return ''
   return `or(${conds
-    .map((where) => makeWhere({ where }, model, doc))
+    .map((where) => makeWhere({ where }, model, doc, { wrapWithAmp: true }))
     .join(',')})`
 }
 

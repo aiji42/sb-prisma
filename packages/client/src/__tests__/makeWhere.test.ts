@@ -42,7 +42,8 @@ test('makeWhere with OR and NOT operator', () => {
           OR: [
             { name: { startsWith: 'a' } },
             { name: { endsWith: 'b' } },
-            { name: { contains: 'c', mode: 'insensitive' } },
+            { name: { contains: 'c', mode: 'insensitive' }, id: { gt: 3 } },
+            { id: { gt: 10, lt: 20 } },
           ],
           NOT: [{ id: { gt: 10 } }, { id: { lt: 100 } }],
         } as Args['where'],
@@ -51,7 +52,7 @@ test('makeWhere with OR and NOT operator', () => {
       doc,
     ),
   ).toEqual(
-    'or(name.like.a*,name.like.*b,name.ilike.*c*),not.and(id.gt.10,id.lt.100)',
+    'or(name.like.a*,name.like.*b,and(name.ilike.*c*,id.gt.3),and(id.lt.20,id.gt.10)),not.and(id.gt.10,id.lt.100)',
   )
 })
 
