@@ -1,31 +1,20 @@
-import {
-  Args,
-  ModelMapping,
-  NegativeOperators,
-  Operators,
-  Scalar,
-  Where,
-} from '../types'
+import { Args, NegativeOperators, Operators, Scalar, Where } from '../types'
+import { DataModel } from '../libs/DataModel'
 
-// TODO: related table
-export const makeWhere = (
-  arg: Args,
-  model: string,
-  { models }: Pick<ModelMapping, 'models'>,
-) => {
+export const makeWhere = (arg: Args, model: string, doc: DataModel) => {
   if (!arg.where) return ''
   const { AND, OR, NOT, ...rest } = arg.where
   let where = []
-  if (AND) where.push(_AND(AND, model, { models }))
-  if (OR) where.push(_OR(OR, model, { models }))
-  if (NOT) where.push(_NOT(NOT, model, { models }))
+  if (AND) where.push(_AND(AND, model, doc))
+  if (OR) where.push(_OR(OR, model, doc))
+  if (NOT) where.push(_NOT(NOT, model, doc))
   const restStatement = Object.entries(rest)
     .flatMap(([col, cond]) => {
       const s = []
       if (cond === null || typeof cond !== 'object')
         return _equals(col, cond, false)
       if (cond.equals !== undefined)
-        s.push(_equals(col, cond.equals, isListColumn(col, model, { models })))
+        s.push(_equals(col, cond.equals, doc.model(model).field(col).isList))
       if (cond.in !== undefined) s.push(_in(col, cond.in))
       if (cond.notIn !== undefined) s.push(_notIn(col, cond.notIn))
       if (cond.lt !== undefined) s.push(_lt(col, cond.lt))
@@ -53,33 +42,33 @@ export const makeWhere = (
 const _AND = (
   condition: Where[] | Where,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
 ): string => {
   const cond = Array.isArray(condition) ? condition : [condition]
   return `and(${cond
-    .map((where) => makeWhere({ where }, model, { models }))
+    .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
 
 const _OR = (
   condition: Where[] | Where,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
 ): string => {
   const cond = Array.isArray(condition) ? condition : [condition]
   return `or(${cond
-    .map((where) => makeWhere({ where }, model, { models }))
+    .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
 
 const _NOT = (
   condition: Where[] | Where,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
 ): string => {
   const cond = Array.isArray(condition) ? condition : [condition]
   return `not.and(${cond
-    .map((where) => makeWhere({ where }, model, { models }))
+    .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
 
@@ -236,9 +225,3 @@ const _equalsList = (col: string, condition: Required<Operators['equals']>) => {
   const cond = Array.isArray(condition) ? condition : [condition]
   return `${col}.eq.{${JSON.stringify(cond).replace(/^\[|]$/g, '')}}`
 }
-
-const isListColumn = (
-  column: string,
-  model: string,
-  { models }: Pick<ModelMapping, 'models'>,
-) => models[model]?.fields[column]?.isList ?? false

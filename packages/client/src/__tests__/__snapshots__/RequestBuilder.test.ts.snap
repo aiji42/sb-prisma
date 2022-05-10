@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RequestBuilder; build - creatMany 1`] = `
+Array [
+  "https://example.com/rest/v1/User?select=*",
+  Object {
+    "body": "[{\\"id\\":\\"this is uuid mocked value\\",\\"name\\":\\"Foo\\"},{\\"id\\":\\"this is uuid mocked value\\",\\"name\\":\\"Baa\\"}]",
+    "headers": Object {
+      "Authorization": "Bearer apikey",
+      "Content-Type": "application/json",
+      "Prefer": "return=representation",
+      "apikey": "apikey",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`RequestBuilder; build - creatMany with skipDuplicates 1`] = `
+Array [
+  "https://example.com/rest/v1/User?select=*",
+  Object {
+    "body": "[{\\"id\\":\\"this is uuid mocked value\\",\\"name\\":\\"Foo\\"},{\\"id\\":\\"this is uuid mocked value\\",\\"name\\":\\"Baa\\"}]",
+    "headers": Object {
+      "Authorization": "Bearer apikey",
+      "Content-Type": "application/json",
+      "Prefer": "return=representation,resolution=ignore-duplicates",
+      "apikey": "apikey",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`RequestBuilder; build - deleteMany 1`] = `
+Array [
+  "https://example.com/rest/v1/User?select=*&and=%28name.not.like.Foo*%29",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer apikey",
+      "Content-Type": "application/json",
+      "Prefer": "return=representation",
+      "apikey": "apikey",
+    },
+    "method": "DELETE",
+  },
+]
+`;
+
+exports[`RequestBuilder; build - findMany 1`] = `
+Array [
+  "https://example.com/rest/v1/User?select=name&and=%28or%28id.lt.20%2Cid.gt.10%2Cid.lte.120%2Cid.gte.110%29%2Cname.like.F*%29&limit=10&offset=100",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer apikey",
+      "Content-Type": "application/json",
+      "apikey": "apikey",
+    },
+    "method": "GET",
+  },
+]
+`;
+
+exports[`RequestBuilder; build - updateMany 1`] = `
+Array [
+  "https://example.com/rest/v1/User?select=*&and=%28name.not.like.Foo*%29",
+  Object {
+    "body": "{\\"updatedAt\\":\\"2022-05-10T00:00:00.000Z\\",\\"name\\":\\"Foo\\"}",
+    "headers": Object {
+      "Authorization": "Bearer apikey",
+      "Content-Type": "application/json",
+      "Prefer": "return=representation",
+      "apikey": "apikey",
+    },
+    "method": "PATCH",
+  },
+]
+`;
+
+exports[`RequestBuilder; execute - deleteMany 1`] = `
+Object {
+  "count": 2,
+}
+`;
+
+exports[`RequestBuilder; execute - findFirst 1`] = `
+Object {
+  "id": "aaaa",
+  "name": "Foo",
+  "updatedAt": "2022-05-10T00:00:00.000Z",
+}
+`;
+
+exports[`RequestBuilder; execute - findMany 1`] = `
+Array [
+  Object {
+    "id": "aaaa",
+    "name": "Foo",
+    "updatedAt": "2022-05-10T00:00:00.000Z",
+  },
+  Object {
+    "id": "bbbb",
+    "name": "Boo",
+    "updatedAt": "2022-05-10T00:00:00.000Z",
+  },
+]
+`;
+
+exports[`RequestBuilder; execute - updateMany 1`] = `
+Object {
+  "count": 2,
+}
+`;

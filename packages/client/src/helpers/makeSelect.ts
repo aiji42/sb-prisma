@@ -1,21 +1,24 @@
-import { Args, ModelMapping } from '../types'
+import { Args } from '../types'
+import { DataModel } from '../libs/DataModel'
 
 export const makeSelect = (
   args: Args,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
 ): string => {
   if (!args.select) return '*'
   return Object.entries(args.select)
     .filter(([, v]) => v)
-    .map(([alias, v]) => {
-      const rm = models[model]?.fields?.[alias]
-      if (rm?.kind !== 'object') return alias
+    .map(([alias, children]) => {
+      const field = doc.model(model).field(alias)
+      if (field.kind !== 'object') return alias
 
-      const search = `${alias}:${models[rm.type]?.dbName ?? rm.type}`
-      return `${search}(${makeSelect(typeof v === 'object' ? v : {}, rm.type, {
-        models,
-      })})`
+      const search = `${alias}:${doc.model(field.type).table}`
+      return `${search}(${makeSelect(
+        typeof children === 'object' ? children : {},
+        field.type,
+        doc,
+      )})`
     })
     .join(',')
 }

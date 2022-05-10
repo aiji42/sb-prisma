@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QueryBuilder .query 1`] = `
+URLSearchParams {
+  Symbol(query): Array [
+    "select",
+    "id,Team:teams(users:User(*))",
+    "and",
+    "(or(name.ilike.*aa*,name.ilike.*bb*),id.eq.1,name.like.a*)",
+    "Team.and",
+    "(id.eq.10)",
+    "Team.users.and",
+    "(id.gte.100)",
+    "order",
+    "name.asc,id.desc",
+    "limit",
+    "10",
+    "offset",
+    "20",
+  ],
+  Symbol(context): null,
+}
+`;
