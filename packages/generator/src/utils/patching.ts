@@ -6,21 +6,8 @@ const { name: generatorName } = require('../../package.json')
 
 const patchMappings = [
   {
-    module: '@prisma/client/runtime/index.js',
-    patches: [
-      {
-        target: 'this.hooks.beforeRequest(',
-        replaceTo: 'await this.hooks.beforeRequest(',
-      },
-    ],
-  },
-  {
     module: '@prisma/client/runtime/proxy.js',
     patches: [
-      {
-        target: 'this.hooks.beforeRequest(',
-        replaceTo: 'await this.hooks.beforeRequest(',
-      },
       {
         target: 'this.pushSchema()',
         replaceTo: '{}',
