@@ -1,11 +1,14 @@
 import { makeSelect } from '../helpers/makeSelect'
-import * as modelMap from './__fixtures__/modelMapping'
+import { DataModel } from '../libs/DataModel'
+import { getSampleDMMF } from './__fixtures__/getSampleSchema'
 
-test('make select statement', () => {
-  expect(makeSelect({}, 'User', modelMap)).toEqual('*')
+test('make select statement', async () => {
+  const doc = new DataModel((await getSampleDMMF()).datamodel)
+  expect(makeSelect({}, 'User', doc)).toEqual('*')
 })
 
-test('make select statement with related table', () => {
+test('make select statement with related table', async () => {
+  const doc = new DataModel((await getSampleDMMF()).datamodel)
   const arg = {
     select: {
       id: true,
@@ -13,10 +16,11 @@ test('make select statement with related table', () => {
       Team: true,
     },
   }
-  expect(makeSelect(arg, 'User', modelMap)).toEqual('id,name,Team:_team(*)')
+  expect(makeSelect(arg, 'User', doc)).toEqual('id,name,Team:teams(*)')
 })
 
-test('make select statement with alias', () => {
+test('make select statement with alias', async () => {
+  const doc = new DataModel((await getSampleDMMF()).datamodel)
   const arg = {
     select: {
       id: true,
@@ -36,7 +40,7 @@ test('make select statement with alias', () => {
       },
     },
   }
-  expect(makeSelect(arg, 'Team', modelMap)).toEqual(
-    'id,name,users:User(id,name,Team:_team(id,name,users:User(*)))',
+  expect(makeSelect(arg, 'Team', doc)).toEqual(
+    'id,name,users:User(id,name,Team:teams(id,name,users:User(*)))',
   )
 })

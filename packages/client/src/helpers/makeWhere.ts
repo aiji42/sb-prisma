@@ -1,85 +1,83 @@
-import {
-  Args,
-  ModelMapping,
-  NegativeOperators,
-  Operators,
-  Scalar,
-  Where,
-} from '../types'
+import { Args, NegativeOperators, Operators, Scalar, Where } from '../types'
+import { DataModel } from '../libs/DataModel'
 
-// TODO: related table
 export const makeWhere = (
   arg: Args,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
+  option?: { wrapWithAmp?: boolean },
 ) => {
   if (!arg.where) return ''
   const { AND, OR, NOT, ...rest } = arg.where
   let where = []
-  if (AND) where.push(_AND(AND, model, { models }))
-  if (OR) where.push(_OR(OR, model, { models }))
-  if (NOT) where.push(_NOT(NOT, model, { models }))
-  const restStatement = Object.entries(rest)
-    .flatMap(([col, cond]) => {
-      const s = []
-      if (cond === null || typeof cond !== 'object')
-        return _equals(col, cond, false)
-      if (cond.equals !== undefined)
-        s.push(_equals(col, cond.equals, isListColumn(col, model, { models })))
-      if (cond.in !== undefined) s.push(_in(col, cond.in))
-      if (cond.notIn !== undefined) s.push(_notIn(col, cond.notIn))
-      if (cond.lt !== undefined) s.push(_lt(col, cond.lt))
-      if (cond.lte !== undefined) s.push(_lte(col, cond.lte))
-      if (cond.gt !== undefined) s.push(_gt(col, cond.gt))
-      if (cond.gte !== undefined) s.push(_gte(col, cond.gte))
-      if (cond.contains !== undefined)
-        s.push(_contains(col, cond.contains, cond.mode))
-      if (cond.startsWith !== undefined)
-        s.push(_startsWith(col, cond.startsWith, cond.mode))
-      if (cond.endsWith !== undefined)
-        s.push(_endsWith(col, cond.endsWith, cond.mode))
-      if (cond.has !== undefined) s.push(_has(col, cond.has))
-      if (cond.hasEvery !== undefined) s.push(_hasEvery(col, cond.hasEvery))
-      if (cond.hasSome !== undefined) s.push(_hasSome(col, cond.hasSome))
-      if (cond.isEmpty !== undefined) s.push(_isEmpty(col, cond.isEmpty))
-      if (cond.not !== undefined) s.push(_not(col, cond.not, cond.mode))
-      return s
-    })
-    .join(',')
-  if (restStatement) where.push(restStatement)
-  return where.join(',')
+  if (AND) where.push(_AND(AND, model, doc))
+  if (OR) where.push(_OR(OR, model, doc))
+  if (NOT) where.push(_NOT(NOT, model, doc))
+  const restStatement = Object.entries(rest).flatMap(([col, cond]) => {
+    const s = []
+    if (cond === null || typeof cond !== 'object')
+      return _equals(col, cond, false)
+    if (cond.equals !== undefined)
+      s.push(_equals(col, cond.equals, doc.model(model).field(col).isList))
+    if (cond.in !== undefined) s.push(_in(col, cond.in))
+    if (cond.notIn !== undefined) s.push(_notIn(col, cond.notIn))
+    if (cond.lt !== undefined) s.push(_lt(col, cond.lt))
+    if (cond.lte !== undefined) s.push(_lte(col, cond.lte))
+    if (cond.gt !== undefined) s.push(_gt(col, cond.gt))
+    if (cond.gte !== undefined) s.push(_gte(col, cond.gte))
+    if (cond.contains !== undefined)
+      s.push(_contains(col, cond.contains, cond.mode))
+    if (cond.startsWith !== undefined)
+      s.push(_startsWith(col, cond.startsWith, cond.mode))
+    if (cond.endsWith !== undefined)
+      s.push(_endsWith(col, cond.endsWith, cond.mode))
+    if (cond.has !== undefined) s.push(_has(col, cond.has))
+    if (cond.hasEvery !== undefined) s.push(_hasEvery(col, cond.hasEvery))
+    if (cond.hasSome !== undefined) s.push(_hasSome(col, cond.hasSome))
+    if (cond.isEmpty !== undefined) s.push(_isEmpty(col, cond.isEmpty))
+    if (cond.not !== undefined) s.push(_not(col, cond.not, cond.mode))
+    return s
+  })
+  if (restStatement) where = [...where, ...restStatement]
+  const finals = where.filter((w) => w.length > 0)
+  return finals.length > 1 && option?.wrapWithAmp
+    ? `and(${finals.join(',')})`
+    : finals.join(',')
 }
 
 const _AND = (
   condition: Where[] | Where,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
 ): string => {
-  const cond = Array.isArray(condition) ? condition : [condition]
-  return `and(${cond
-    .map((where) => makeWhere({ where }, model, { models }))
+  const conds = Array.isArray(condition) ? condition : [condition]
+  if (conds.length < 1) return ''
+  return `and(${conds
+    .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
 
 const _OR = (
   condition: Where[] | Where,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
 ): string => {
-  const cond = Array.isArray(condition) ? condition : [condition]
-  return `or(${cond
-    .map((where) => makeWhere({ where }, model, { models }))
+  const conds = Array.isArray(condition) ? condition : [condition]
+  if (conds.length < 1) return ''
+  return `or(${conds
+    .map((where) => makeWhere({ where }, model, doc, { wrapWithAmp: true }))
     .join(',')})`
 }
 
 const _NOT = (
   condition: Where[] | Where,
   model: string,
-  { models }: Pick<ModelMapping, 'models'>,
+  doc: DataModel,
 ): string => {
-  const cond = Array.isArray(condition) ? condition : [condition]
-  return `not.and(${cond
-    .map((where) => makeWhere({ where }, model, { models }))
+  const conds = Array.isArray(condition) ? condition : [condition]
+  if (conds.length < 1) return ''
+  return `not.and(${conds
+    .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
 
@@ -236,9 +234,3 @@ const _equalsList = (col: string, condition: Required<Operators['equals']>) => {
   const cond = Array.isArray(condition) ? condition : [condition]
   return `${col}.eq.{${JSON.stringify(cond).replace(/^\[|]$/g, '')}}`
 }
-
-const isListColumn = (
-  column: string,
-  model: string,
-  { models }: Pick<ModelMapping, 'models'>,
-) => models[model]?.fields[column]?.isList ?? false
