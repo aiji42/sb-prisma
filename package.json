@@ -10,6 +10,7 @@
     "@commitlint/config-conventional": "16.2.4",
     "@lerna-lite/cli": "^1.1.1",
     "@lerna-lite/run": "^1.1.1",
+    "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "husky": "7.0.4",
     "multi-semantic-release": "^2.12.0",
