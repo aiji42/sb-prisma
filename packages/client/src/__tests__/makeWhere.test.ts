@@ -1,7 +1,8 @@
 import { makeWhere } from '../helpers/makeWhere'
-import { Args } from '../types'
+import { Args, Where } from '../types'
 import { DMMF } from '@prisma/generator-helper'
 import { DataModel } from '../libs/DataModel'
+import { text } from 'stream/consumers'
 
 const models = {
   models: [
@@ -21,19 +22,19 @@ const models = {
 } as DMMF.Document['datamodel']
 const doc = new DataModel(models)
 
-test('make where statement', () => {
+test('makeWhere', () => {
   expect(
     makeWhere({ where: { id: 1, name: { in: ['a', 'b', 'c'] } } }, 'User', doc),
   ).toEqual('id.eq.1,name.in.("a","b","c")')
 })
 
-test('make where statement with not operator', () => {
+test('makeWhere with not operator', () => {
   expect(makeWhere({ where: { name: { not: null } } }, 'User', doc)).toEqual(
     'name.not.is.null',
   )
 })
 
-test('make where statement with OR and NOT operator', () => {
+test('makeWhere with OR and NOT operator', () => {
   expect(
     makeWhere(
       {
@@ -54,7 +55,7 @@ test('make where statement with OR and NOT operator', () => {
   )
 })
 
-test('make where statement with list field operator', () => {
+test('makeWhere with list field operator', () => {
   expect(
     makeWhere(
       {
@@ -72,4 +73,20 @@ test('make where statement with list field operator', () => {
   ).toEqual(
     'labels.cs.{"a"},languages.ov.{"a"},tags1.cs.{"a","b"},tags2.eq.{},tags3.eq.{"c"}',
   )
+})
+
+test('makeWhere do not query empty OR/AND/NOT', () => {
+  expect(
+    makeWhere(
+      {
+        where: {
+          OR: [],
+          AND: [],
+          NOT: { id: 1, NOT: [], OR: [{ id: 2 }, { id: 3 }] },
+        } as Where,
+      },
+      'User',
+      doc,
+    ),
+  ).toEqual('not.and(or(id.eq.2,id.eq.3),id.eq.1)')
 })

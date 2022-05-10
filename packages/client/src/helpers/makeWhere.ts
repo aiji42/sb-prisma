@@ -36,7 +36,7 @@ export const makeWhere = (arg: Args, model: string, doc: DataModel) => {
     })
     .join(',')
   if (restStatement) where.push(restStatement)
-  return where.join(',')
+  return where.filter((w) => w.length > 0).join(',')
 }
 
 const _AND = (
@@ -44,8 +44,9 @@ const _AND = (
   model: string,
   doc: DataModel,
 ): string => {
-  const cond = Array.isArray(condition) ? condition : [condition]
-  return `and(${cond
+  const conds = Array.isArray(condition) ? condition : [condition]
+  if (conds.length < 1) return ''
+  return `and(${conds
     .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
@@ -55,8 +56,9 @@ const _OR = (
   model: string,
   doc: DataModel,
 ): string => {
-  const cond = Array.isArray(condition) ? condition : [condition]
-  return `or(${cond
+  const conds = Array.isArray(condition) ? condition : [condition]
+  if (conds.length < 1) return ''
+  return `or(${conds
     .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
@@ -66,8 +68,9 @@ const _NOT = (
   model: string,
   doc: DataModel,
 ): string => {
-  const cond = Array.isArray(condition) ? condition : [condition]
-  return `not.and(${cond
+  const conds = Array.isArray(condition) ? condition : [condition]
+  if (conds.length < 1) return ''
+  return `not.and(${conds
     .map((where) => makeWhere({ where }, model, doc))
     .join(',')})`
 }
