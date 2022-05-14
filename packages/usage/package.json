@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "3.13.0",
-    "@sb-prisma/client": "2.0.1"
+    "@sb-prisma/client": "2.0.2"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.9.0",
