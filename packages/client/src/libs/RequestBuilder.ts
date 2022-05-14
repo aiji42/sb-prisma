@@ -11,7 +11,6 @@ type Fetch = typeof fetch
 export class RequestBuilder {
   queryBuilder: QueryBuilder
   doc: DataModel
-  fetch: Fetch
 
   constructor(
     dataModel: DMMF.Datamodel,
@@ -20,7 +19,6 @@ export class RequestBuilder {
   ) {
     this.queryBuilder = new QueryBuilder(dataModel)
     this.doc = this.queryBuilder.doc
-    this.fetch = typeof fetch === 'undefined' ? crossFetch : fetch
   }
 
   public build(args: Args, model: string, action: string) {
@@ -52,7 +50,9 @@ export class RequestBuilder {
 
   public async execute(args: Args, model: string, action: string) {
     const req = this.build(args, model, action)
-    const res = await this.fetch(...req)
+    const res = await (typeof fetch === 'undefined' ? crossFetch : fetch)(
+      ...req,
+    )
     return await afterHandler(res, action)
   }
 
