@@ -21,3 +21,13 @@ URLSearchParams {
   Symbol(context): null,
 }
 `;
+
+exports[`QueryBuilder .query for count 1`] = `
+URLSearchParams {
+  Symbol(query): Array [
+    "select",
+    "id,name,teamId",
+  ],
+  Symbol(context): null,
+}
+`;

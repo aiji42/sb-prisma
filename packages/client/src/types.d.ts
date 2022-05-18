@@ -23,7 +23,10 @@ export type NegativeOperators = {
   not?: Omit<Operators, 'mode'> | Scalar
 }
 
-type Select = Record<string, boolean | Args>
+type Select = {
+  _count?: { select: Select }
+  [x: string]: boolean | Args
+}
 type SelectFlatten = Record<string, boolean>
 
 export type Where = {

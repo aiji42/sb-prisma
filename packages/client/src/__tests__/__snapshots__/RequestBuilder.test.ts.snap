@@ -1,5 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`RequestBuilder; build - count 1`] = `
+Array [
+  "https://example.com/rest/v1/teams?select=name&and=%28not.and%28name.like.z*%2Cname.neq.a%29%29",
+  Object {
+    "headers": Object {
+      "Authorization": "Bearer apikey",
+      "Content-Type": "application/json",
+      "Prefer": "count=exact",
+      "apikey": "apikey",
+    },
+    "method": "GET",
+  },
+]
+`;
+
 exports[`RequestBuilder; build - creatMany 1`] = `
 Array [
   "https://example.com/rest/v1/User?select=*",

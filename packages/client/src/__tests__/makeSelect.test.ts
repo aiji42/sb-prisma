@@ -44,3 +44,13 @@ test('make select statement with alias', async () => {
     'id,name,users:User(id,name,Team:teams(id,name,users:User(*)))',
   )
 })
+
+test('make select statement with _all (for count)', async () => {
+  const doc = new DataModel((await getSampleDMMF()).datamodel)
+  const arg = {
+    select: {
+      _all: true,
+    },
+  }
+  expect(makeSelect(arg, 'Team', doc)).toEqual('*')
+})
