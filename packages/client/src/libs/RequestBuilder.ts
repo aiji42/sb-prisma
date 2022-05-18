@@ -35,6 +35,9 @@ export class RequestBuilder {
     if (['findFirst', 'findUnique', 'findMany'].includes(action)) {
       return findRequest(url, headers)
     }
+    if (['count'].includes(action)) {
+      return countRequest(url, headers)
+    }
     if (['delete', 'deleteMany'].includes(action)) {
       return deleteRequest(url, headers)
     }
@@ -53,7 +56,7 @@ export class RequestBuilder {
     const res = await (typeof fetch === 'undefined' ? crossFetch : fetch)(
       ...req,
     )
-    return await afterHandler(res, action)
+    return await afterHandler(res, args, action)
   }
 
   set apikey(key: string) {
@@ -114,6 +117,16 @@ const findRequest = (url: URL, headers: HeadersInit): Parameters<Fetch> => {
   ]
 }
 
+const countRequest = (url: URL, headers: HeadersInit): Parameters<Fetch> => {
+  return [
+    url.toString(),
+    {
+      method: 'GET',
+      headers: { ...headers, Prefer: 'count=exact' },
+    },
+  ]
+}
+
 const deleteRequest = (url: URL, headers: HeadersInit): Parameters<Fetch> => {
   return [
     url.toString(),
@@ -168,7 +181,7 @@ const singly = (data: unknown[]): unknown | undefined => {
   return data[0]
 }
 
-const afterHandler = async (res: Response, action: string) => {
+const afterHandler = async (res: Response, arg: Args, action: string) => {
   if (!res.ok) throw new SBPrismaAPIError(await res.json())
 
   if (
@@ -182,6 +195,32 @@ const afterHandler = async (res: Response, action: string) => {
   if (['deleteMany', 'updateMany', 'createMany'].includes(action)) {
     return { count: (await res.json()).length }
   }
+  if (['count'].includes(action) && arg.select?._count) {
+    return await handleCount(res, arg.select._count.select)
+  }
 
   throw new SBPrismaError(`Action ${action} is not yet supported.`)
+}
+
+const handleCount = async (res: Response, select: Required<Args>['select']) => {
+  const range = res.headers.get('Content-Range')
+  if (!range) throw new SBPrismaError(``)
+  const [, count] = range.match(/\/(\d+)/) ?? []
+  if (count === undefined) throw new SBPrismaError(``)
+
+  if (Object.keys(select).filter((k) => k !== '_all').length < 1)
+    return Number(count)
+
+  const data = await res.json()
+  return Object.fromEntries<number>(
+    Object.entries(select)
+      .filter(([, v]) => v)
+      .map(([k]) => {
+        if (k === '_all') return [k, Number(count)]
+        return [
+          k,
+          data.filter((d: Record<string, unknown>) => d[k] !== null).length,
+        ]
+      }),
+  )
 }

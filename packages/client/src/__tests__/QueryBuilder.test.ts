@@ -29,3 +29,23 @@ test('QueryBuilder .query', async () => {
   )
   expect(qb.query).toMatchSnapshot()
 })
+
+test('QueryBuilder .query for count', async () => {
+  const queryBuilder = new QueryBuilder((await getSampleDMMF()).datamodel)
+  const qb = queryBuilder.setup(
+    {
+      select: {
+        _count: {
+          select: {
+            _all: true,
+            id: true,
+            name: true,
+            teamId: true,
+          },
+        },
+      },
+    },
+    'User',
+  )
+  expect(qb.query).toMatchSnapshot()
+})

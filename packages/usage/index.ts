@@ -76,6 +76,21 @@ const main = async () => {
   })
   console.dir(teamFindMany)
 
+  console.log('===== db.team.count() =====')
+  const teamCount = await db.team.count()
+  console.dir(teamCount)
+
+  console.log('===== db.user.count() =====')
+  const userCount = await db.user.count({
+    select: {
+      teamId: true,
+      id: true,
+      _all: true,
+    },
+    where: { name: { contains: 'o', mode: 'insensitive' } },
+  })
+  console.dir(userCount)
+
   console.log('===== db.user.create() =====')
   const userCreate = await db.user.create({
     data: { name: 'ega', email: 'ega@example.com' },
@@ -123,6 +138,8 @@ const main = async () => {
     userFindFirst,
     userFindMany,
     teamFindMany,
+    teamCount,
+    userCount,
     userCreate,
     userCreateMany,
     userUpdate,
@@ -162,6 +179,7 @@ const prepare = async () => {
       { name: 'Foo', email: 'foo@example.com', teamId: teams[0].id },
       { name: 'Bar', email: 'bar@example.com', teamId: teams[0].id },
       { name: 'Baz', email: 'baz@example.com', teamId: teams[1].id },
+      { name: 'Org', email: 'org@example.com', teamId: null },
     ],
   })
 }

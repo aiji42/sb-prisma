@@ -50,6 +50,29 @@ test('RequestBuilder; build - findMany', async () => {
   expect(req).toMatchSnapshot()
 })
 
+test('RequestBuilder; build - count', async () => {
+  const queryBuilder = new RequestBuilder(
+    (await getSampleDMMF()).datamodel,
+    'https://example.com',
+    'apikey',
+  )
+  const req = queryBuilder.build(
+    {
+      select: { name: true, _all: true },
+      where: {
+        NOT: [
+          { name: { startsWith: 'z' } },
+          { name: { not: { equals: 'a' } } },
+        ],
+      } as Where,
+    },
+    'Team',
+    'count',
+  )
+
+  expect(req).toMatchSnapshot()
+})
+
 test('RequestBuilder; build - creatMany', async () => {
   const queryBuilder = new RequestBuilder(
     (await getSampleDMMF()).datamodel,

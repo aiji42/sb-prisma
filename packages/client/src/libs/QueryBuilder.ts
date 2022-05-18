@@ -92,12 +92,18 @@ const flat = (
   doc: DataModel,
 ): ArgsFlatten[] => {
   const { select = {}, data, skipDuplicates, ...rest } = args
+  if (select._count) {
+    return flat(model, { select: select._count.select, ...rest }, prefix, doc)
+  }
   const [rootSelects, children] = Object.entries(select).reduce<
     [SelectFlatten, Select]
   >(
     (res, [columnOrModel, fields]) => {
       const [root, children] = res
-      if (doc.model(model).field(columnOrModel).kind !== 'object')
+      if (
+        columnOrModel === '_all' ||
+        doc.model(model).field(columnOrModel).kind !== 'object'
+      )
         return [{ ...root, [columnOrModel]: fields as boolean }, children]
       return [root, { ...children, [columnOrModel]: fields }]
     },
