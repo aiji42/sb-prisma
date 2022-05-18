@@ -14,7 +14,7 @@ The available Prisma Client APIs are Those that are not yet supported will be su
 - ✅ updateMany
 - ✅ deleteMany
 - ◻️ upsert
-- ◻️ count
+- ✅ count
 - ◻️ aggregate
 - ◻️ groupBy
 
