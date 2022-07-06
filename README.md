@@ -3,10 +3,10 @@
 [![CI](https://github.com/aiji42/sb-prisma/actions/workflows/CI.yml/badge.svg)](https://github.com/aiji42/sb-prisma/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/aiji42/sb-prisma/branch/main/graph/badge.svg?token=W7KAYUXF3V)](https://codecov.io/gh/aiji42/sb-prisma)
 
-⛔️🚨⛔️
-**Use of this library is deprecated.**
-I recommend what you use [prisma-data-proxy-alt](https://github.com/aiji42/prisma-data-proxy-alt) for hosting by yourself alternative Prisma Data Proxy.
-⛔️🚨⛔️
+🚨 **Use of this library is deprecated.** 🚨  
+I recommend that you use [prisma-data-proxy-alt](https://github.com/aiji42/prisma-data-proxy-alt) to host the prisma data proxy alternative on your own.
+
+---
 
 # sb-prisma
 
